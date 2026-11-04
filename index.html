@@ -86,7 +86,7 @@
   @media (max-width: 560px) { .themeseg button span { display: none; } .pill span:last-child { display: none; } .hello b { font-size: 18px; }
                               .remote .pill span:last-child { display: inline; } .remote .pill { padding: 8px 10px; font-size: 12px; } }
 
-  /* navigare: verticala la stanga pe tableta, jos pe telefon */
+  /* navigare: in bara de sus pe tableta (o muta JS-ul in .topbar), jos pe telefon */
   .rail {
     position: fixed; z-index: 6; display: flex; gap: 4px; padding: 7px;
     left: 50%; transform: translateX(-50%); bottom: max(14px, env(safe-area-inset-bottom)); border-radius: 999px;
@@ -97,15 +97,18 @@
   .rail button.sel { background: var(--glass2); color: var(--accent); box-shadow: 0 4px 14px rgba(120,78,36,.18); }
   @media (max-width: 420px) { .rail button { min-width: 0; padding: 8px 9px; } }
   @media (min-width: 900px) {
-    body { padding-left: 116px; padding-bottom: 120px; }
-    .rail { left: 24px; top: 50%; bottom: auto; transform: translateY(-50%); flex-direction: column; gap: 10px; padding: 10px; }
-    .rail button { width: 58px; height: 58px; min-width: 0; padding: 0; justify-content: center; border-radius: 50%; }
-    .rail button span:last-child { display: none; }
-    .rail button.sel { background: #fff; color: var(--text); }
-    :root[data-theme="dark"] .rail button.sel { background: var(--glass2); color: var(--accent); }
+    body { padding-bottom: 40px; }
+    .topbar .rail { position: static; transform: none; background: var(--fill); box-shadow: none; border: 0; padding: 4px; gap: 2px;
+                    -webkit-backdrop-filter: none; backdrop-filter: none; }
+    .topbar .rail button { flex-direction: row; gap: 7px; padding: 8px 14px; min-width: 0; font-size: 14px; }
+    .topbar .rail .ic { font-size: 18px; }
+    .topbar .rail button.sel { background: #fff; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    :root[data-theme="dark"] .topbar .rail button.sel { background: var(--glass2); color: var(--accent); }
   }
+  @media (min-width: 900px) and (max-width: 1099px) { .topbar .rail button span:last-child { display: none; } }
+  @media (min-width: 900px) and (max-width: 1400px) { .themeseg button span { display: none; } }
   @media (min-width: 900px) and (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .rail button.sel { background: var(--glass2); color: var(--accent); }
+    :root:not([data-theme="light"]) .topbar .rail button.sel { background: var(--glass2); color: var(--accent); }
   }
 
   /* titluri si grile */
@@ -210,12 +213,17 @@
   /* ================= ACASA: dashboard ================= */
   .dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
   .dash > * { grid-column: span 12; min-width: 0; }
+  .dash > .d-light { grid-column: span 6; }
   @media (min-width: 700px) {
-    .d-tv, .d-water, .d-light, .d-rstat, .d-temp, .d-fan, .d-heat, .d-wnow, .d-wdet { grid-column: span 6; }
+    .d-tv, .d-water, .d-inv, .d-rstat, .d-temp, .d-fan, .d-heat, .d-wnow, .d-wdet { grid-column: span 6; }
+    .dash > .d-light { grid-column: span 3; }
   }
   @media (min-width: 980px) {
     .d-clock { grid-column: span 5; } .d-tv { grid-column: span 3; } .d-water { grid-column: span 4; }
-    .d-rooms, .d-light { grid-column: span 4; }
+    .d-rooms, .d-inv { grid-column: span 4; }
+    .dash > .d-light { grid-column: span 2; }
+    .d-light .lart svg { height: 150px; }
+    .d-light .h-icon { display: none; }
     .d-rstat, .d-temp, .d-fan, .d-heat { grid-column: span 4; }
     .d-wnow { grid-column: span 5; } .d-wdet { grid-column: span 7; }
   }
@@ -285,6 +293,26 @@
   .dev.rtile { min-height: 170px; justify-content: space-between; cursor: pointer; }
   .rbig { font-size: 40px; font-weight: 300; letter-spacing: -.03em; line-height: 1; margin: 10px 0 4px; }
   .dev .dv .bt { color: var(--text2); font-weight: 500; font-size: 13px; }
+
+  /* invertorul: card minimalist pe Acasa (deschide pagina lui) */
+  .d-inv { display: flex !important; flex-direction: column; justify-content: space-between; gap: 12px; }
+  .iv-big { display: flex; align-items: baseline; gap: 8px; }
+  .iv-big b { font-size: 44px; font-weight: 300; letter-spacing: -.03em; line-height: 1; }
+  .iv-big span { font-size: 14px; color: var(--text2); }
+  .iv-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .iv-row div { background: var(--fill); border-radius: 14px; padding: 8px 10px; min-width: 0; }
+  .iv-row b { display: block; font-size: 17px; font-weight: 600; white-space: nowrap; }
+  .iv-row small { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .iv-bat { height: 6px; border-radius: 3px; background: var(--fill2); overflow: hidden; margin-top: 5px; }
+  .iv-bat i { display: block; height: 100%; background: var(--green); border-radius: 3px; transition: width .4s; }
+  .d-inv.off { opacity: .6; }
+  /* pagina invertorului */
+  .inv-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
+  @media (max-width: 699px) { .inv-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .ivf b { display: block; font-size: 34px; font-weight: 300; letter-spacing: -.02em; margin: 10px 0 4px; }
+  .ivf .kv { padding: 7px 0; font-size: 14px; }
+  .inv-sets .kv { cursor: pointer; }
+  .inv-sets .kv span:last-child { color: var(--accent); font-weight: 600; }
 
   /* Lumina 1 / Lumina 2: tot cardul e butonul; lampa centrata se aprinde */
   .d-light { display: flex; flex-direction: column; position: relative; overflow: hidden; cursor: pointer; user-select: none; -webkit-user-select: none;
@@ -571,6 +599,8 @@
         </div>
       </button>
 
+      <button class="card d-inv" id="dInv"></button>
+
       <div class="card d-light" id="light1"></div>
       <div class="card d-light" id="light2"></div>
 
@@ -674,6 +704,19 @@
     <section class="first"><div class="card na" id="bo"></div></section>
   </main>
 
+  <!-- INVERTOR (din cardul de pe Acasa): detalii si setari; datele vin de la placa invertorului prin MQTT -->
+  <main class="page" id="pg-invertor" hidden>
+    <div class="backrow"><button class="back glass" id="invBack">‹ Acasă</button><span class="h-sub" id="invAge"></span></div>
+    <div class="inv-flow" id="invFlow"></div>
+    <section>
+      <div class="bento">
+        <div class="card s6" id="invToday"></div>
+        <div class="card s6" id="invState"></div>
+        <div class="card inv-sets" id="invSets"></div>
+      </div>
+    </section>
+  </main>
+
   <!-- TELECOMANDA -->
   <main class="page" id="pg-tel" hidden>
     <section class="first"><div class="card na" id="tel"></div></section>
@@ -753,6 +796,8 @@ const ICONS = {
   up: 'M6 15l6-6 6 6', down: 'M6 9l6 6 6-6', left: 'M15 6l-6 6 6 6', right: 'M9 6l6 6-6 6',
   back: 'M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3', menu: 'M4 7h16M4 12h16M4 17h16',
   plus: 'M12 5v14M5 12h14', minus: 'M5 12h14',
+  battery: 'M3 7h15v10H3zM21 10v4M6 10v4', bolt: 'M13 2L4 14h7l-1 8 9-12h-7z',
+  plug: 'M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0zM12 17v5',
 };
 function icon(name) {
   const s = document.createElement('span');
@@ -842,8 +887,13 @@ const REMOTE = location.protocol === 'https:' || /[?&]mqtt\b/.test(location.sear
 const mq = { client: null, cfg: null, online: null, at: 0, err: '', info: null };
 function mqCfg() {
   try {
-    return Object.assign({ host: 't141a764.ala.eu-central-1.emqxsl.com', port: '8084', user: '', pass: '', prefix: 'isolar/acasa' },
-                         JSON.parse(store('casaMqtt') || '{}'));
+    const c = Object.assign({ host: 't141a764.ala.eu-central-1.emqxsl.com', port: '8084', user: '', pass: '', prefix: 'isolar/acasa' },
+                            JSON.parse(store('casaMqtt') || '{}'));
+    // tastatura (Android) poate adauga spatii sau "/" la capat: "isolar/acasa/" asculta pe "isolar/acasa//..."
+    c.host = (c.host || '').trim().replace(/^\w+:\/\//, '').replace(/[\/:].*$/, '');
+    c.user = (c.user || '').trim();
+    c.prefix = (c.prefix || '').trim().replace(/^\/+|\/+$/g, '') || 'isolar/acasa';
+    return c;
   }
   catch (e) { return null; }
 }
@@ -1385,6 +1435,156 @@ function roomAc(i) {
   let k = acData.findIndex(a => a.nume.trim().toLowerCase() === rn);
   if (k < 0) k = acData.findIndex(a => a.termo.on && a.termo.senzor === i);
   return k;
+}
+
+// =====================================================================================
+//        INVERTORUL: card pe Acasa + pagina cu detalii si setari (date de la placa lui, prin MQTT)
+// =====================================================================================
+const fmtW = w => w == null ? '--' : Math.abs(w) >= 1000 ? (w / 1000).toFixed(1) + ' kW' : Math.round(w) + ' W';
+const INV_OUT = ['Rețea întâi', 'Solar întâi', 'SBU (solar, baterie, rețea)'];
+const INV_CHG = ['Rețea întâi', 'Solar întâi', 'Solar + rețea', 'Doar solar'];
+const INV_SETS = [                                  // ca in aplicatia invertorului; placa lui verifica din nou
+  { k: 'out', name: 'Prioritate ieșire', opts: INV_OUT },
+  { k: 'chg', name: 'Prioritate încărcare', opts: INV_CHG },
+  { k: 'maxchg', name: 'Max încărcare totală', list: 'optChg', unit: 'A' },
+  { k: 'maxac', name: 'Max încărcare din rețea', list: 'optAc', unit: 'A' },
+  { k: 'rech', name: 'Revenire pe rețea la', min: 44, max: 51, step: 1, unit: 'V' },
+  { k: 'redis', name: 'Revenire pe baterie la', min: 48, max: 58, step: 1, unit: 'V', zero: 'baterie plină' },
+  { k: 'cut', name: 'Tensiune oprire baterie', min: 40, max: 48, step: 0.1, unit: 'V' },
+  { k: 'bulk', name: 'Tensiune absorbție (CV)', min: 48, max: 58.4, step: 0.1, unit: 'V' },
+  { k: 'float', name: 'Tensiune float', min: 48, max: 58.4, step: 0.1, unit: 'V' },
+  { k: 'btype', name: 'Tip baterie', opts: ['AGM', 'Flooded', 'User'] },
+];
+const invVal = (s, v) => v == null ? '--' : s.opts ? (s.opts[v] || '?') : (s.zero && +v === 0) ? s.zero : v + ' ' + s.unit;
+// starea e "vie" daca placa invertorului e online, a trimis de curand si invertorul raspunde
+function invLive(iv) { return iv && iv.stare && iv.online !== 0 && iv.varsta >= 0 && iv.varsta < 90 && iv.stare.inv === 1; }
+
+const ic = (function () {
+  const c = $('dInv');
+  const head = el('div', 'h-head', c);
+  setIcon(el('span', 'h-icon', head), 'sun');
+  const g = el('div', 'grow', head);
+  el('div', '', g).textContent = 'Invertor';
+  const sub = el('div', 'h-sub', g);
+  const big = el('div', 'iv-big', c);
+  const pv = el('b', 'num', big);
+  el('span', '', big).textContent = 'din panouri';
+  const row = el('div', 'iv-row', c);
+  const box = label => { const d = el('div', '', row); const b = el('b', 'num', d); const s = el('small', '', d); s.textContent = label; return { d, b, s }; };
+  const bat = box('baterie'), load = box('consum casă'), grid = box('rețea');
+  const bar = el('i', '', el('div', 'iv-bat', bat.d));
+  c.addEventListener('click', () => go('invertor'));
+  return { c, sub, pv, bat, bar, load, grid };
+})();
+function renderInvCard(iv) {
+  const live = invLive(iv), d = (iv && iv.stare) || {};
+  ic.c.classList.toggle('off', !live);
+  ic.sub.textContent = !iv || !iv.stare ? 'aștept date de la placa invertorului'
+    : iv.online === 0 ? 'placa invertorului e offline' : !live ? 'invertorul nu răspunde' : d.modeText || '';
+  ic.pv.textContent = live ? fmtW(d.pvW) : '--';
+  ic.bat.b.textContent = live ? Math.round(d.soc) + '%' : '--';
+  ic.bat.s.textContent = !live ? 'baterie' : d.batW > 20 ? 'se încarcă' : d.batW < -20 ? 'se descarcă' : 'baterie';
+  ic.bar.style.width = (live ? Math.max(0, Math.min(100, d.soc)) : 0) + '%';
+  ic.load.b.textContent = live ? fmtW(d.outW) : '--';
+  ic.grid.b.textContent = !live ? '--' : d.gridV > 50 ? fmtW(d.gridW) : 'fără';
+}
+
+$('invBack').addEventListener('click', () => go('home'));
+const ip = (function () {
+  const flow = $('invFlow');
+  const tile = (iconName, title) => {
+    const c = el('div', 'card ivf', flow);
+    const h = el('div', 'h-head', c);
+    setIcon(el('span', 'h-icon', h), iconName);
+    el('span', 'grow', h).textContent = title;
+    const b = el('b', 'num', c);
+    const list = el('div', '', c);
+    return { b, list };
+  };
+  const t = { pv: tile('sun', 'Panouri'), bat: tile('battery', 'Baterie'), load: tile('home', 'Consum casă'), grid: tile('plug', 'Rețea') };
+  el('div', 'cname', $('invToday')).textContent = 'Azi';
+  const today = el('div', '', $('invToday'));
+  el('div', 'cname', $('invState')).textContent = 'Stare';
+  const state = el('div', '', $('invState'));
+  el('div', 'cname', $('invSets')).textContent = 'Setări';
+  const sets = el('div', '', $('invSets'));
+  el('div', 'note', $('invSets')).textContent = 'Atinge o setare ca s-o schimbi. Placa invertorului verifică valoarea înainte s-o trimită.';
+  return { t, today, state, sets };
+})();
+function kvRows(box, rows) {
+  box.textContent = '';
+  rows.forEach(([k, v]) => { const r = el('div', 'kv', box); el('span', '', r).textContent = k; el('span', 'num', r).textContent = v; });
+}
+const n1 = (v, d) => v == null || isNaN(v) ? '--' : Number(v).toFixed(d || 0);
+let invResSeen = null;
+function renderInvPage(iv) {
+  // raspunsul invertorului la o setare: o singura data, cand apare unul nou
+  if (iv && iv.rezultat && iv.rezVarsta >= 0 && iv.rezVarsta < 60) {
+    const key = iv.rezultat.cmd + '|' + iv.rezultat.result;
+    if (invResSeen !== null && key !== invResSeen) showMsg('Invertor: ' + iv.rezultat.cmd + ' → ' + iv.rezultat.result);
+    invResSeen = key;
+  } else if (invResSeen === null) invResSeen = '';
+  if (curPage !== 'invertor') return;
+  const live = invLive(iv), d = (iv && iv.stare) || {}, s = (iv && iv.setari) || null;
+  $('invAge').textContent = !iv || !iv.stare ? 'fără date' : iv.online === 0 ? 'placa invertorului e offline'
+    : 'actualizat ' + ago(iv.varsta) + (live ? '' : ' · invertorul nu răspunde');
+  const T = ip.t;
+  T.pv.b.textContent = live ? fmtW(d.pvW) : '--';
+  kvRows(T.pv.list, [['Tensiune', n1(d.pvV, 1) + ' V'], ['Curent', n1(d.pvI, 1) + ' A']]);
+  T.bat.b.textContent = live ? Math.round(d.soc) + '%' : '--';
+  kvRows(T.bat.list, [['Putere', (d.batW > 0 ? '+' : '') + fmtW(d.batW)], ['Tensiune', n1(d.batV, 2) + ' V'],
+                      ['Stocat', n1(d.kwh, 2) + ' kWh · ' + n1(d.ah) + ' Ah']]);
+  T.load.b.textContent = live ? fmtW(d.outW) : '--';
+  kvRows(T.load.list, [['Sarcină', n1(d.load) + '% · ' + n1(d.outVA) + ' VA'], ['Ieșire', n1(d.outV, 1) + ' V · ' + n1(d.outHz, 1) + ' Hz']]);
+  T.grid.b.textContent = !live ? '--' : d.gridV > 50 ? fmtW(d.gridW) : 'fără rețea';
+  kvRows(T.grid.list, [['Tensiune', n1(d.gridV, 1) + ' V'], ['Frecvență', n1(d.gridHz, 1) + ' Hz']]);
+  kvRows(ip.today, d.tPv == null ? [['Ziua', 'placa invertorului nu știe încă ora']] :
+    [['Produs de panouri', n1(d.tPv, 2) + ' kWh'], ['Consumat în casă', n1(d.tLoad, 2) + ' kWh'],
+     ['Luat din rețea', n1(d.tIn, 2) + ' kWh'], ['Total panouri', n1(d.ePv, 1) + ' kWh']]);
+  kvRows(ip.state, [['Mod', d.modeText || '--'], ['Stare', d.status || '--'], ['Temperatură', n1(d.temp) + ' °C'],
+                    ['Tensiune bus', n1(d.bus) + ' V'], ['WiFi placă invertor', n1(d.rssi) + ' dBm']]);
+  ip.sets.textContent = '';
+  if (!s) { el('div', 'note', ip.sets).textContent = 'Setările încă n-au fost citite de placa invertorului.'; return; }
+  INV_SETS.forEach(x => {
+    const r = el('button', 'kv', ip.sets);
+    r.style.width = '100%';
+    el('span', '', r).textContent = x.name;
+    el('span', 'num', r).textContent = invVal(x, s[x.k]);
+    r.addEventListener('click', () => editInvSetting(x, s));
+  });
+}
+async function editInvSetting(x, s) {
+  const cur = s[x.k];
+  let v;
+  if (x.opts || x.list) {
+    const opts = x.opts ? x.opts.map((o, i) => [String(i), o]) : (s[x.list] || []).map(a => [String(a), a + ' A']);
+    v = await askChoice(x.name, 'Acum: ' + invVal(x, cur), opts, String(cur));
+  } else {
+    v = await askText(x.name, 'Acum: ' + invVal(x, cur) + ' · între ' + x.min + ' și ' + x.max + ' ' + x.unit + (x.zero ? ' (0 = ' + x.zero + ')' : ''), String(cur));
+    if (v !== null) {
+      v = v.replace(',', '.');
+      if (isNaN(+v) || (+v !== 0 || !x.zero) && (+v < x.min || +v > x.max)) { showMsg('Valoare în afara intervalului'); return; }
+    }
+  }
+  if (v === null || v === undefined || String(v) === String(cur)) return;
+  const shown = invVal(x, x.opts ? +v : v);
+  if (!confirm('Trimit la invertor: ' + x.name + ' = ' + shown + '?')) return;
+  post('/api/invertor', { cmd: x.k + ' ' + v });
+  showMsg('Trimis, aștept răspunsul invertorului…');
+}
+// fereastra cu o lista de variante (ca askText); intoarce valoarea aleasa sau null
+function askChoice(title, hint, opts, cur) {
+  return new Promise(res => {
+    const dlg = $('dlgPick'), sel = $('pickSel');
+    $('pickTitle').textContent = title;
+    $('pickHint').textContent = hint;
+    sel.textContent = '';
+    opts.forEach(([v, t]) => { const o = el('option', '', sel); o.value = v; o.textContent = t; });
+    sel.value = cur;
+    dlg.returnValue = '';
+    dlg.onclose = () => res(dlg.returnValue === 'ok' ? sel.value : null);
+    dlg.showModal();
+  });
 }
 
 // coduri BroadLink dupa nume (televizorul si luminile): daca lipsesc, se invata pe loc
@@ -2211,6 +2411,8 @@ function renderHome() {
   renderIrac();
   renderHeat(lastData.automat);
   renderPlug(lastData.priza);
+  renderInvCard(lastData.invertor);
+  renderInvPage(lastData.invertor);
   if (curPage === 'camera' && sensorsData[selRoom]) $('title').textContent = sensorsData[selRoom].nume;
   if (curPage === 'home') fitHome();
 }
@@ -2219,8 +2421,8 @@ function renderHome() {
 // in bara de navigare; "camera" si "vremea" se deschid din Acasa
 const PAGES = [['home', 'Acasă', 'home'], ['tv', 'TV', 'tv'], ['apa', 'Apă caldă', 'flame'],
                ['tel', 'Telecomandă', 'remote'], ['sys', 'Sistem', 'gear']];
-// nu sunt in meniu: camera si vremea se deschid din Acasa, climatizarea din Sistem
-const SUBPAGES = [['camera', 'Cameră'], ['vreme', 'Vremea'], ['clima', 'Climatizare']];
+// nu sunt in meniu: camera, vremea si invertorul se deschid din Acasa, climatizarea din Sistem
+const SUBPAGES = [['camera', 'Cameră'], ['vreme', 'Vremea'], ['clima', 'Climatizare'], ['invertor', 'Invertor']];
 $('toClima').addEventListener('click', () => go('clima'));
 let curPage = 'home';
 const tabs = PAGES.map(([id, name, ic]) => {
@@ -2231,6 +2433,15 @@ const tabs = PAGES.map(([id, name, ic]) => {
   b.addEventListener('click', () => go(id));
   return b;
 });
+// pe tableta meniul sta in bara de sus; pe telefon jos (fixat de ecran: nu poate sta in bara, care are blur)
+const wideNav = window.matchMedia('(min-width: 900px)');
+function placeNav() {
+  const rail = $('rail'), bar = document.querySelector('.topbar');
+  if (wideNav.matches && rail.parentNode !== bar) bar.insertBefore(rail, $('themeseg'));
+  else if (!wideNav.matches && rail.parentNode === bar) document.body.insertBefore(rail, document.querySelector('.wrap'));
+}
+wideNav.addEventListener('change', () => { placeNav(); fitHome(); });
+placeNav();
 function go(id) {
   const all = PAGES.concat(SUBPAGES);
   if (!all.some(p => p[0] === id)) id = 'home';
@@ -2239,7 +2450,7 @@ function go(id) {
     $('pg-' + p).hidden = p !== id;
     if (p === id) $('title').textContent = name;
   });
-  PAGES.forEach(([p], k) => tabs[k].classList.toggle('sel', p === id || (p === 'home' && (id === 'camera' || id === 'vreme'))
+  PAGES.forEach(([p], k) => tabs[k].classList.toggle('sel', p === id || (p === 'home' && (id === 'camera' || id === 'vreme' || id === 'invertor'))
                                                           || (p === 'sys' && id === 'clima')));
   store('pagina', id);
   if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
@@ -2290,7 +2501,7 @@ if (REMOTE) {
   const sec = $('pg-sys').querySelector('section');
   const c = el('div', 'card mqform');
   sec.insertBefore(c, sec.firstChild);             // primul card pe Sistem
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v6';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v8';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
@@ -2314,8 +2525,9 @@ if (REMOTE) {
   save.addEventListener('click', () => {
     const v = {};
     Object.keys(f).forEach(k => v[k] = f[k].value.trim());
-    if (!v.prefix) v.prefix = 'isolar/acasa';
     store('casaMqtt', JSON.stringify(v));
+    const n = mqCfg();                               // forma curatata apare inapoi in campuri
+    Object.keys(f).forEach(k => f[k].value = n[k] || '');
     showMsg('Mă conectez la ' + v.host);
     mqConnect();
   });
