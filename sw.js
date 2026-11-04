@@ -1,6 +1,6 @@
 // Service worker: aplicatia porneste si cu semnal slab. Retea intai, cache daca reteaua nu merge.
 // Vremea si serverul MQTT nu trec prin cache.
-const CACHE = 'casa-v8';
+const CACHE = 'casa-v13';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
