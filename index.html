@@ -861,7 +861,7 @@ function mqStatus() {
   else if (!fresh) $('netTxt').textContent = 'Aștept date…';
   // pe cardul Server MQTT (Sistem): ce s-a intamplat exact, ramane scris
   if (mq.info) mq.info.textContent = !mq.cfg || !mq.cfg.user ? 'Scrie utilizatorul și parola, apoi Salvează.'
-    : conn ? 'Conectat ca „' + mq.cfg.user + '”' + (fresh ? ' · primesc date de la placă' : ' · încă nu vin date (vezi drepturile utilizatorului în EMQX)')
+    : conn ? 'Conectat ca „' + mq.cfg.user + '”' + (fresh ? ' · primesc date de la placă' : mq.err ? ' · ' + mq.err : ' · încă nu vin date (vezi drepturile utilizatorului în EMQX)')
     : mq.err ? 'Nu mă pot conecta: ' + mq.err : 'Mă conectez la ' + mq.cfg.host + '…';
 }
 function mqConnect() {
@@ -878,7 +878,14 @@ function mqConnect() {
   const tell = t => { if (!told) { told = true; showMsg(t); } };
   mq.client.on('connect', () => {
     mq.err = '';
-    mq.client.subscribe(c.prefix + '/#', { qos: 1 });
+    mq.client.subscribe(c.prefix + '/#', { qos: 1 }, (e, granted) => {
+      // EMQX refuza abonarea in tacere (cod 128) daca utilizatorul n-are drept pe subiecte
+      if (e || (granted && granted.some(g => g.qos >= 128))) {
+        mq.err = 'utilizatorul „' + c.user + '” n-are voie pe ' + c.prefix + '/# (EMQX › Access Control › Authorization)';
+        showMsg('Conectat, dar ' + mq.err);
+        mqStatus();
+      }
+    });
     tell('Conectat la server ✓');
     mqStatus();
   });
@@ -2279,7 +2286,7 @@ keepAwake();
 // aplicatia de telefon: datele serverului MQTT (pe pagina Sistem), biblioteca MQTT si lucrul fara semnal
 if (REMOTE) {
   const c = el('div', 'card mqform', $('pg-sys').querySelector('section'));
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v3';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v4';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
