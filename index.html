@@ -80,10 +80,11 @@
   .themeseg { display: flex; padding: 3px; border-radius: 999px; background: var(--fill); }
   .themeseg button { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; font-size: 14px; color: var(--text2); }
   .themeseg button .ic { font-size: 16px; }
-  .themeseg button.sel { background: var(--glass2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .themeseg button.sel { background: var(--glass2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.08); font-weight: 600; }
+  .themeseg .tlbl { align-self: center; padding: 0 8px 0 10px; font-size: 13px; color: var(--text2); }
   .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; background: var(--fill); font-size: 14px; color: var(--text2); white-space: nowrap; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); }
-  @media (max-width: 560px) { .themeseg button span { display: none; } .pill span:last-child { display: none; } .hello b { font-size: 18px; }
+  @media (max-width: 560px) { .themeseg button span, .themeseg .tlbl { display: none; } .pill span:last-child { display: none; } .hello b { font-size: 18px; }
                               .remote .pill span:last-child { display: inline; } .remote .pill { padding: 8px 10px; font-size: 12px; } }
 
   /* navigare: in bara de sus pe tableta (o muta JS-ul in .topbar), jos pe telefon */
@@ -105,8 +106,12 @@
     .topbar .rail button.sel { background: #fff; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
     :root[data-theme="dark"] .topbar .rail button.sel { background: var(--glass2); color: var(--accent); }
   }
-  @media (min-width: 900px) and (max-width: 1099px) { .topbar .rail button span:last-child { display: none; } }
-  @media (min-width: 900px) and (max-width: 1400px) { .themeseg button span { display: none; } }
+  /* Acasa mai mare decat restul */
+  .rail button:first-child .ic { font-size: 27px; }
+  @media (min-width: 900px) {
+    .topbar .rail button:first-child { padding: 10px 22px; font-size: 16px; }
+    .topbar .rail button:first-child .ic { font-size: 22px; }
+  }
   @media (min-width: 900px) and (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .topbar .rail button.sel { background: var(--glass2); color: var(--accent); }
   }
@@ -213,17 +218,17 @@
   /* ================= ACASA: dashboard ================= */
   .dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
   .dash > * { grid-column: span 12; min-width: 0; }
-  .dash > .d-light { grid-column: span 6; }
+  .dash > .d-light, .dash > .d-inv { grid-column: span 6; }
   @media (min-width: 700px) {
-    .d-tv, .d-water, .d-inv, .d-rstat, .d-temp, .d-fan, .d-heat, .d-wnow, .d-wdet { grid-column: span 6; }
-    .dash > .d-light { grid-column: span 3; }
+    .d-tv, .d-water, .d-living, .d-rstat, .d-temp, .d-fan, .d-heat, .d-wnow, .d-wdet { grid-column: span 6; }
+    .dash > .d-light, .dash > .d-inv { grid-column: span 3; }
   }
   @media (min-width: 980px) {
     .d-clock { grid-column: span 5; } .d-tv { grid-column: span 3; } .d-water { grid-column: span 4; }
-    .d-rooms, .d-inv { grid-column: span 4; }
-    .dash > .d-light { grid-column: span 2; }
+    .d-rooms, .d-living { grid-column: span 4; }
+    .dash > .d-light, .dash > .d-inv { grid-column: span 2; }
     .d-light .lart svg { height: 150px; }
-    .d-light .h-icon { display: none; }
+    .d-light .h-icon, .d-inv .h-icon { display: none; }
     .d-rstat, .d-temp, .d-fan, .d-heat { grid-column: span 4; }
     .d-wnow { grid-column: span 5; } .d-wdet { grid-column: span 7; }
   }
@@ -234,6 +239,10 @@
   .h-icon { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--glass2);
             color: var(--accent); font-size: 19px; box-shadow: 0 2px 8px rgba(120,78,36,.12); }
   .h-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .h-link { text-align: left; cursor: pointer; border-radius: 16px; margin: -6px; padding: 6px; width: calc(100% + 12px);
+            transition: background .2s; }
+  .h-link:active { background: var(--fill); }
+  .h-chev { font-size: 24px; color: var(--text3); font-weight: 400; flex: none; }
 
   /* ceas */
   .d-clock { position: relative; overflow: hidden; display: flex !important; flex-direction: column; justify-content: space-between; min-height: 210px; }
@@ -253,7 +262,7 @@
   .d-tv { display: flex; flex-direction: column; }
   /* televizorul desenat e butonul de pornit / oprit */
   .tvart { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0 4px; min-height: 0; border-radius: 18px; }
-  .tvart svg { width: 100%; max-width: 210px; display: block; filter: drop-shadow(0 12px 16px rgba(40,20,5,.28)); transition: transform .15s; }
+  .tvart svg { width: 100%; max-width: 175px; display: block; filter: drop-shadow(0 12px 16px rgba(40,20,5,.28)); transition: transform .15s; }
   .tvart:active svg { transform: scale(.95); }
   .tvart .tv-pw { stroke: #ff6b4a; transition: stroke .2s; }
   .tvart.flash .tv-pw { stroke: #fff; }
@@ -306,6 +315,29 @@
   .iv-bat { height: 6px; border-radius: 3px; background: var(--fill2); overflow: hidden; margin-top: 5px; }
   .iv-bat i { display: block; height: 100%; background: var(--green); border-radius: 3px; transition: width .4s; }
   .d-inv.off { opacity: .6; }
+  /* card ingust (cat o lumina): valorile una sub alta */
+  .d-inv .iv-big { flex-wrap: wrap; row-gap: 2px; }
+  .d-inv .iv-big b { font-size: 36px; }
+  .d-inv .iv-row { grid-template-columns: 1fr; gap: 6px; }
+  .d-inv .iv-row div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 6px; padding: 7px 10px; }
+  .d-inv .iv-row .iv-bat { flex-basis: 100%; }
+
+  /* Lumina Living: 6 butoane 2 x 3 care umplu cardul */
+  .d-living { display: flex !important; flex-direction: column; gap: 14px; }
+  .lv-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, minmax(64px, 1fr)); gap: 10px; }
+  .lv-btn { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 3px; padding: 10px 14px;
+            border-radius: 16px; background: var(--fill); text-align: left; cursor: pointer; user-select: none; -webkit-user-select: none;
+            transition: background .35s, transform .15s, box-shadow .35s; min-width: 0; }
+  .lv-btn b { font-size: 34px; font-weight: 600; line-height: 1; letter-spacing: -.02em; white-space: nowrap; }
+  .lv-all { align-items: center; text-align: center; }
+  .lv-all b { font-size: 26px; letter-spacing: .04em; }
+  .lv-all.lv-on b { color: var(--accent); }
+  .lv-all.lv-off b { color: var(--text2); }
+  .lv-btn small { font-size: 12px; color: var(--text2); }
+  .lv-btn.on { background: linear-gradient(150deg, rgba(255,200,110,.85), rgba(255,170,70,.55)); box-shadow: 0 6px 18px rgba(242,153,46,.30); }
+  .lv-btn.on small { color: var(--text); }
+  .lv-btn.tap { transform: scale(.97); }
+  .lv-btn.miss { opacity: .55; }
   /* pagina invertorului */
   .inv-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
   @media (max-width: 699px) { .inv-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -326,6 +358,8 @@
   .d-light.on .l-cone { opacity: .85; }
   .lhint { font-size: 13px; color: var(--text2); text-align: center; min-height: 17px; }
   .d-light.miss .lart { opacity: .45; }
+  .d-spare { cursor: default; }
+  .d-spare .lart svg { filter: drop-shadow(0 10px 12px rgba(60,80,30,.18)); }
 
   /* randul de jos: Hol, Scari, Bucatarie, Terasa - becul se aprinde, tot cardul comuta */
   .d-lights4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
@@ -599,10 +633,27 @@
         </div>
       </button>
 
+      <div class="card d-living" id="dLiving"></div>
+
       <button class="card d-inv" id="dInv"></button>
 
-      <div class="card d-light" id="light1"></div>
-      <div class="card d-light" id="light2"></div>
+      <!-- loc liber (fost Lumina 2): doar o planta decorativa, pana primeste o functie -->
+      <div class="card d-light d-spare" id="dSpare">
+        <div class="lart"><svg viewBox="0 0 160 200" aria-hidden="true">
+          <ellipse cx="80" cy="190" rx="46" ry="6" fill="rgba(110,70,30,.15)"/>
+          <path d="M80 128C78 100 70 80 52 62" stroke="#6f8f4e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M80 128C82 96 92 70 112 52" stroke="#6f8f4e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M80 128V70" stroke="#6f8f4e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M52 62C30 60 18 40 22 22c18 2 34 14 30 40z" fill="#86ad5c"/>
+          <path d="M112 52c4-22 22-34 40-30 2 20-14 36-40 30z" fill="#7aa251"/>
+          <path d="M80 72C64 56 66 32 80 18c14 14 16 38 0 54z" fill="#93bb68"/>
+          <path d="M66 96c-20 4-34-6-38-20 16-6 32 0 38 20z" fill="#7aa251"/>
+          <path d="M94 100c18 6 34-2 40-16-16-8-32-4-40 16z" fill="#86ad5c"/>
+          <path d="M50 128h60l-8 56H58z" fill="url(#lOff)"/>
+          <rect x="46" y="122" width="68" height="12" rx="4" fill="#c9ad8c"/>
+        </svg></div>
+        <div class="lhint">loc liber</div>
+      </div>
 
       <div class="d-rooms" id="roomTiles"></div>
 
@@ -676,6 +727,7 @@
 
   <!-- TV: telecomanda completa (in meniu, in locul Climatizarii) -->
   <main class="page" id="pg-tv" hidden>
+    <div class="backrow"><button class="back glass toHome">‹ Acasă</button></div>
     <div class="dash">
       <div class="card d-tvmain" id="tvMain"></div>
       <div class="card d-tvrock" id="tvRock"></div>
@@ -701,6 +753,7 @@
 
   <!-- APA CALDA -->
   <main class="page" id="pg-apa" hidden>
+    <div class="backrow"><button class="back glass toHome">‹ Acasă</button></div>
     <section class="first"><div class="card na" id="bo"></div></section>
   </main>
 
@@ -1002,8 +1055,10 @@ function fillCodes(sel, codes, cur) {
 }
 
 // ---------------- tema luminoasa / intunecata ----------------
+el('span', 'tlbl', $('themeseg')).textContent = 'Temă';   // ca sa se vada ce face comutatorul
 const themeBtns = [['light', 'Luminos', 'sun'], ['dark', 'Întunecat', 'moon']].map(([t, name, ic]) => {
   const b = el('button', '', $('themeseg'));
+  b.title = 'Temă ' + name.toLowerCase();
   b.appendChild(icon(ic));
   el('span', '', b).textContent = name;
   b.addEventListener('click', () => setTheme(t));
@@ -1490,6 +1545,7 @@ function renderInvCard(iv) {
 }
 
 $('invBack').addEventListener('click', () => go('home'));
+document.querySelectorAll('.toHome').forEach(b => b.addEventListener('click', () => go('home')));
 const ip = (function () {
   const flow = $('invFlow');
   const tile = (iconName, title) => {
@@ -1598,7 +1654,7 @@ function learnCode(name, rf) {
 // Buton fara cod: alegi un cod invatat deja (primeste numele butonului) sau inveti unul nou.
 // Nu se ofera codurile altor butoane si nici cele ale aerotermei (automatizarea le cauta dupa nume).
 function pickCode(name, rf) {
-  const used = Object.values(TV_KEYS).flat().map(k => k[0]).concat(LIGHTS.map(l => l[1]), SMALL_LIGHTS.map(l => l[1]), [FAN_ON, FAN_OFF]);
+  const used = Object.values(TV_KEYS).flat().map(k => k[0]).concat(LIGHTS.map(l => l[1]), SMALL_LIGHTS.map(l => l[1]), LIVING, [FAN_ON, FAN_OFF]);
   const r = lastData && lastData.automat;
   if (r) used.push(r.pornire, r.oprire);
   const free = codeList().map((c, i) => [i, c]).filter(([, c]) => !used.includes(c.nume) && !c.nume.startsWith(IRAC + ' '));
@@ -1745,11 +1801,14 @@ const TV_ART = '<svg viewBox="0 0 180 128"><defs>' +
   '<path d="M72 108h36l6 14H66z" fill="#2a2522"/><rect x="56" y="120" width="68" height="5" rx="2.5" fill="#1f1b18"/></svg>';
 const tvHome = (function () {
   const c = $('dTv');
-  const head = el('div', 'h-head', c);
+  const head = el('button', 'h-head h-link', c);  // toata zona de sus (iconita + titlu): telecomanda completa
+  head.setAttribute('aria-label', 'Deschide pagina TV');
+  head.addEventListener('click', () => go('tv'));
   setIcon(el('span', 'h-icon', head), 'tv');
   const g = el('div', 'grow', head);
   el('div', '', g).textContent = 'Televizor';
   const sub = el('div', 'h-sub', g);
+  el('span', 'h-chev', head).textContent = '›';
   const btn = el('button', 'tvart', c);
   btn.innerHTML = TV_ART;
   btn.setAttribute('aria-label', 'Pornește / oprește televizorul');
@@ -1821,7 +1880,7 @@ function renderTv(t) {
   const powMissing = codeIndex('TV Pornit') < 0;
   tvHome.btn.classList.toggle('miss', powMissing);
   tvHome.hint.textContent = powMissing ? 'Atinge televizorul ca să-i alegi codul' : 'Atinge televizorul: pornit / oprit';
-  tvHome.sub.textContent = learning ? msg : 'IR prin BroadLink · telecomanda completă în meniul TV';
+  tvHome.sub.textContent = learning ? msg : 'Telecomanda completă';
   // pagina TV
   let missing = 0;
   tvKeyEls.forEach(([name, b]) => { const m = codeIndex(name) < 0; b.classList.toggle('miss', m); if (m) missing++; });
@@ -1924,7 +1983,8 @@ const LAMP_SVG = '<svg viewBox="0 0 160 200">' +
   '<path class="l-on" d="M52 16h56l26 64H26z" fill="url(#lOn)"/>' +
   '<ellipse class="l-rim" cx="80" cy="80" rx="54" ry="5" fill="#fff1c9"/>' +
   '<path d="M80 80v24M80 104L54 196M80 104l26 92M80 104v92" stroke="#3b2c22" stroke-width="4" stroke-linecap="round"/></svg>';
-const LIGHTS = [['light1', 'Lumina 1'], ['light2', 'Lumina 2']];
+// Lumina 1 a devenit Lumina Living, Lumina 2 un loc liber: codurile lor ("Lumina 2" etc.) se pot da butoanelor din living
+const LIGHTS = [];
 function lightOn(name) { return store('luminaStare:' + name) === '1'; }
 const lights = LIGHTS.map(([id, name]) => {
   const c = $(id);
@@ -2011,12 +2071,70 @@ const smallLights = SMALL_LIGHTS.map(([label, code]) => {
   });
   return { c, code, s };
 });
+// ---------------- Lumina Living: 1..4 comuta cate o lumina, ON / OFF le aprind / sting pe toate ----------------
+// Coduri RF: "Living 1" .. "Living 4", "Living ON", "Living OFF". Starea 1..4 e dedusa (memorata pe tableta).
+const LIVING_SW = ['Living 1', 'Living 2', 'Living 3', 'Living 4'];
+const LIVING = LIVING_SW.concat(['Living ON', 'Living OFF']);
+const living = (function () {
+  const c = $('dLiving');
+  const head = el('div', 'h-head', c);
+  setIcon(el('span', 'h-icon', head), 'bulb');
+  const g = el('div', 'grow', head);
+  el('div', '', g).textContent = 'Lumina Living';
+  const sub = el('div', 'h-sub', g);
+  const grid = el('div', 'lv-grid', c);
+  const btns = LIVING.map(code => {
+    const all = code === 'Living ON' ? '1' : code === 'Living OFF' ? '0' : null;   // ON / OFF: toate odata
+    const b = el('div', 'lv-btn' + (all ? ' lv-all lv-' + (all === '1' ? 'on' : 'off') : ''), grid);
+    b.setAttribute('role', 'button');
+    el('b', '', b).textContent = code.replace('Living ', '');
+    const s = el('small', '', b);
+    let timer = 0, longPress = false;
+    if (!all) {                                     // apasare lunga: corecteaza doar desenul
+      b.addEventListener('pointerdown', () => {
+        longPress = false;
+        timer = setTimeout(() => {
+          longPress = true;
+          store('luminaStare:' + code, lightOn(code) ? '0' : '1');
+          showMsg('Living ' + code.slice(-1) + ': starea afișată corectată');
+          renderLiving();
+        }, 800);
+      });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(timer)));
+    }
+    b.addEventListener('contextmenu', e => e.preventDefault());
+    b.addEventListener('click', () => {
+      if (longPress) { longPress = false; return; }
+      if (!sendCode(code, true)) return;
+      if (all) LIVING_SW.forEach(k => store('luminaStare:' + k, all));
+      else store('luminaStare:' + code, lightOn(code) ? '0' : '1');
+      b.classList.add('tap');
+      setTimeout(() => b.classList.remove('tap'), 200);
+      renderLiving();
+    });
+    return { b, code, s, all };
+  });
+  return { sub, btns };
+})();
+function renderLiving() {
+  let n = 0;
+  living.btns.forEach(l => {
+    const has = codeIndex(l.code) >= 0, on = !l.all && has && lightOn(l.code);
+    if (on) n++;
+    l.b.classList.toggle('miss', !has);
+    l.b.classList.toggle('on', on);
+    // starea se vede din culoare; textul ramane doar cand lipseste codul (si la ON / OFF, ce fac)
+    l.s.textContent = !has ? 'atinge: alege codul' : l.all ? (l.all === '1' ? 'aprinde toate' : 'stinge toate') : '';
+  });
+  living.sub.textContent = n ? n + ' aprinse' : 'toate stinse';
+}
+
 function renderSmallLights() {
   smallLights.forEach(l => {
     const has = codeIndex(l.code) >= 0, on = has && lightOn(l.code);
     l.c.classList.toggle('miss', !has);
     l.c.classList.toggle('on', on);
-    l.s.textContent = !has ? 'atinge: alege codul' : on ? 'Aprinsă' : 'Stinsă';
+    l.s.textContent = !has ? 'atinge: alege codul' : '';   // aprinsa / stinsa: se vede din culoare
   });
 }
 
@@ -2405,6 +2523,7 @@ function renderHome() {
   renderRoomTiles();
   renderLights();
   renderSmallLights();
+  renderLiving();
   renderRoomStat();
   renderTemp();
   renderFan();
@@ -2419,10 +2538,12 @@ function renderHome() {
 
 // ---------------- pagini si navigare ----------------
 // in bara de navigare; "camera" si "vremea" se deschid din Acasa
-const PAGES = [['home', 'Acasă', 'home'], ['tv', 'TV', 'tv'], ['apa', 'Apă caldă', 'flame'],
-               ['tel', 'Telecomandă', 'remote'], ['sys', 'Sistem', 'gear']];
-// nu sunt in meniu: camera, vremea si invertorul se deschid din Acasa, climatizarea din Sistem
-const SUBPAGES = [['camera', 'Cameră'], ['vreme', 'Vremea'], ['clima', 'Climatizare'], ['invertor', 'Invertor']];
+const PAGES = [['home', 'Acasă', 'home'], ['tel', 'Telecomandă', 'remote'], ['sys', 'Sistem', 'gear']];
+// nu sunt in meniu: TV, apa calda, camera, vremea si invertorul se deschid din cardurile de pe Acasa,
+// climatizarea din Sistem
+const SUBPAGES = [['tv', 'TV'], ['apa', 'Apă caldă'], ['camera', 'Cameră'], ['vreme', 'Vremea'], ['clima', 'Climatizare'],
+                  ['invertor', 'Invertor']];
+const FROM_HOME = ['tv', 'apa', 'camera', 'vreme', 'invertor'];
 $('toClima').addEventListener('click', () => go('clima'));
 let curPage = 'home';
 const tabs = PAGES.map(([id, name, ic]) => {
@@ -2446,11 +2567,12 @@ function go(id) {
   const all = PAGES.concat(SUBPAGES);
   if (!all.some(p => p[0] === id)) id = 'home';
   curPage = id;
+  go.at = Date.now();                               // revenirea automata pe Acasa numara de aici
   all.forEach(([p, name]) => {
     $('pg-' + p).hidden = p !== id;
     if (p === id) $('title').textContent = name;
   });
-  PAGES.forEach(([p], k) => tabs[k].classList.toggle('sel', p === id || (p === 'home' && (id === 'camera' || id === 'vreme' || id === 'invertor'))
+  PAGES.forEach(([p], k) => tabs[k].classList.toggle('sel', p === id || (p === 'home' && FROM_HOME.includes(id))
                                                           || (p === 'sys' && id === 'clima')));
   store('pagina', id);
   if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
@@ -2501,7 +2623,7 @@ if (REMOTE) {
   const sec = $('pg-sys').querySelector('section');
   const c = el('div', 'card mqform');
   sec.insertBefore(c, sec.firstChild);             // primul card pe Sistem
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v8';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v13';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
@@ -2538,6 +2660,27 @@ if (REMOTE) {
   document.head.appendChild(s);
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
   if (!(mqCfg() || {}).user) setTimeout(() => go('sys'), 0);
+}
+
+// Panoul de pe perete: dupa un timp fara atingeri se intoarce singur pe Acasa (butonul Home al iPad-ului nu poate
+// fi folosit de o pagina web). Pe telefon (aplicatia) nu. Timpul se alege din Sistem, se tine pe tableta.
+if (!REMOTE) {
+  const AUTO = [['0', 'Niciodată'], ['30', 'după 30 de secunde'], ['60', 'după 1 minut'], ['120', 'după 2 minute'], ['300', 'după 5 minute']];
+  const r = el('div', 'kv', $('sys'));
+  $('sys').insertBefore(r, $('sysInfo'));
+  el('span', '', r).textContent = 'Revine singură pe Acasă';
+  const sel = el('select', '', r);
+  sel.style.width = 'auto';
+  AUTO.forEach(([v, t]) => { const o = el('option', '', sel); o.value = v; o.textContent = t; });
+  sel.value = store('autoAcasa') || '60';
+  sel.addEventListener('change', () => store('autoAcasa', sel.value));
+  let lastTouch = Date.now();
+  ['pointerdown', 'keydown', 'wheel'].forEach(ev => document.addEventListener(ev, () => { lastTouch = Date.now(); }, { passive: true }));
+  setInterval(() => {
+    const s = parseInt(store('autoAcasa') || '60', 10);
+    const busy = document.querySelector('dialog[open]') || (typeof telLearning !== 'undefined' && telLearning);
+    if (s > 0 && curPage !== 'home' && !busy && Date.now() - Math.max(lastTouch, go.at || 0) > s * 1000) go('home');
+  }, 5000);
 }
 
 go(location.hash.slice(1) || store('pagina') || 'home');
