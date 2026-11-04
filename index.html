@@ -874,13 +874,22 @@ function mqConnect() {
     reconnectPeriod: 5000, connectTimeout: 10000, clean: true,
   });
   mq.err = '';
-  mq.client.on('connect', () => { mq.err = ''; mq.client.subscribe(c.prefix + '/#', { qos: 1 }); mqStatus(); });
+  let told = false;                                  // rezultatul primei incercari apare si ca mesaj
+  const tell = t => { if (!told) { told = true; showMsg(t); } };
+  mq.client.on('connect', () => {
+    mq.err = '';
+    mq.client.subscribe(c.prefix + '/#', { qos: 1 });
+    tell('Conectat la server ✓');
+    mqStatus();
+  });
   mq.client.on('close', () => {
     if (!mq.err) mq.err = 'serverul a închis legătura (utilizator sau parolă greșite?)';
+    tell('Nu mă pot conecta: ' + mq.err);
     mqStatus();
   });
   mq.client.on('error', e => {
     mq.err = /authori[sz]ed|bad user|password/i.test(e.message) ? 'utilizator sau parolă greșite (' + e.message + ')' : e.message;
+    tell('Nu mă pot conecta: ' + mq.err);
     mqStatus();
   });
   mq.client.on('message', (t, p) => {
@@ -2270,7 +2279,7 @@ keepAwake();
 // aplicatia de telefon: datele serverului MQTT (pe pagina Sistem), biblioteca MQTT si lucrul fara semnal
 if (REMOTE) {
   const c = el('div', 'card mqform', $('pg-sys').querySelector('section'));
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon)';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v3';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
