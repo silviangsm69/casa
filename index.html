@@ -838,7 +838,7 @@ async function post(url, params) {
 // starea vine pe <prefix>/stare (retinuta, la 15 s), comenzile pleaca pe <prefix>/cmd/<api> cu aceiasi parametri.
 // Datele serverului se scriu o data in aplicatie (Sistem) si raman doar pe telefon. "?mqtt" = proba pe http.
 const REMOTE = location.protocol === 'https:' || /[?&]mqtt\b/.test(location.search);
-const mq = { client: null, cfg: null, online: null, at: 0 };
+const mq = { client: null, cfg: null, online: null, at: 0, err: '', info: null };
 function mqCfg() {
   try {
     return Object.assign({ host: 't141a764.ala.eu-central-1.emqxsl.com', port: '8084', user: '', pass: '', prefix: 'isolar/acasa' },
@@ -859,6 +859,10 @@ function mqStatus() {
   else if (!conn) $('netTxt').textContent = 'Fără server';
   else if (mq.online === false) $('netTxt').textContent = 'Placa e offline';
   else if (!fresh) $('netTxt').textContent = 'Aștept date…';
+  // pe cardul Server MQTT (Sistem): ce s-a intamplat exact, ramane scris
+  if (mq.info) mq.info.textContent = !mq.cfg || !mq.cfg.user ? 'Scrie utilizatorul și parola, apoi Salvează.'
+    : conn ? 'Conectat ca „' + mq.cfg.user + '”' + (fresh ? ' · primesc date de la placă' : ' · încă nu vin date (vezi drepturile utilizatorului în EMQX)')
+    : mq.err ? 'Nu mă pot conecta: ' + mq.err : 'Mă conectez la ' + mq.cfg.host + '…';
 }
 function mqConnect() {
   if (mq.client) { mq.client.end(true); mq.client = null; }
@@ -869,9 +873,16 @@ function mqConnect() {
     username: c.user, password: c.pass, clientId: 'casa-' + Math.random().toString(16).slice(2, 10),
     reconnectPeriod: 5000, connectTimeout: 10000, clean: true,
   });
-  mq.client.on('connect', () => { mq.client.subscribe(c.prefix + '/#', { qos: 1 }); mqStatus(); });
-  mq.client.on('close', mqStatus);
-  mq.client.on('error', e => showMsg('Server MQTT: ' + e.message));
+  mq.err = '';
+  mq.client.on('connect', () => { mq.err = ''; mq.client.subscribe(c.prefix + '/#', { qos: 1 }); mqStatus(); });
+  mq.client.on('close', () => {
+    if (!mq.err) mq.err = 'serverul a închis legătura (utilizator sau parolă greșite?)';
+    mqStatus();
+  });
+  mq.client.on('error', e => {
+    mq.err = /authori[sz]ed|bad user|password/i.test(e.message) ? 'utilizator sau parolă greșite (' + e.message + ')' : e.message;
+    mqStatus();
+  });
   mq.client.on('message', (t, p) => {
     const k = t.slice(c.prefix.length + 1), s = p.toString();
     if (k === 'stare') { try { const d = JSON.parse(s); mq.at = Date.now(); render(d); } catch (e) { /* mesaj stricat */ } }
@@ -2268,13 +2279,16 @@ if (REMOTE) {
     const i = el('input', '', c);
     i.placeholder = ph;
     i.autocomplete = 'off';
-    i.autocapitalize = 'off';
+    i.setAttribute('autocapitalize', 'off');           // iPhone: fara "Telefon" cu majuscula
+    i.setAttribute('autocorrect', 'off');
+    i.spellcheck = false;
     if (k === 'pass') i.type = 'password';
     if (k === 'port') i.inputMode = 'numeric';
     f[k] = i;
   });
   const cur = mqCfg() || {};
   Object.keys(f).forEach(k => f[k].value = cur[k] || '');
+  mq.info = el('div', 'note', c);
   const save = el('button', 'kv kvlink', c);
   save.textContent = 'Salvează și conectează';
   save.addEventListener('click', () => {
