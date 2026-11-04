@@ -1,0 +1,2307 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#efd9bf">
+<title>Acasă</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg1: #f3dcc0; --bg2: #e9c39a; --bg3: #faf1e6; --glow: rgba(255,190,110,.45);
+    --glass: rgba(255,249,242,.42); --glass2: rgba(255,250,245,.70);
+    --gborder: rgba(255,255,255,.62);
+    --gshadow: 0 12px 40px rgba(120,78,36,.14), inset 0 1px 0 rgba(255,255,255,.7);
+    --text: #2b2018; --text2: #7a6352; --text3: #b29d8b; --sep: rgba(110,70,30,.14);
+    --fill: rgba(120,84,50,.10); --fill2: rgba(120,84,50,.18);
+    --accent: #f2992e; --accent2: #ffc067; --blue: #3b82f6; --teal: #2aa1b3; --green: #3aa65a;
+    --red: #e5484d; --indigo: #6c62e2; --gray: #a7927f; --knob1: #4a3f37; --knob2: #231c17;
+    --r: 26px; --gap: 18px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg1: #2a1d13; --bg2: #3a2616; --bg3: #120d09; --glow: rgba(255,150,60,.16);
+      --glass: rgba(46,34,25,.48); --glass2: rgba(70,54,42,.75); --gborder: rgba(255,230,205,.10);
+      --gshadow: 0 12px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,235,215,.07);
+      --text: #f7eee6; --text2: #c0ad9c; --text3: #7f6f62; --sep: rgba(255,230,205,.12);
+      --fill: rgba(255,236,218,.08); --fill2: rgba(255,236,218,.15);
+      --accent: #ff9f3a; --accent2: #ffc067; --gray: #8d7c6e; --knob1: #5b4d42; --knob2: #1c1612;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg1: #2a1d13; --bg2: #3a2616; --bg3: #120d09; --glow: rgba(255,150,60,.16);
+    --glass: rgba(46,34,25,.48); --glass2: rgba(70,54,42,.75); --gborder: rgba(255,230,205,.10);
+    --gshadow: 0 12px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,235,215,.07);
+    --text: #f7eee6; --text2: #c0ad9c; --text3: #7f6f62; --sep: rgba(255,230,205,.12);
+    --fill: rgba(255,236,218,.08); --fill2: rgba(255,236,218,.15);
+    --accent: #ff9f3a; --accent2: #ffc067; --gray: #8d7c6e; --knob1: #5b4d42; --knob2: #1c1612;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  /* fara zoom (doua degete sau dubla atingere): pagina e un panou de comanda, nu un document */
+  html { -webkit-text-size-adjust: 100%; touch-action: pan-x pan-y; }
+  button, .dev, .card, a { touch-action: manipulation; }
+  /* pagina Acasa pe tableta: fara derulare; dashboard-ul se micsoreaza sa incapa (fitHome) */
+  html.lock, html.lock body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body {
+    margin: 0; color: var(--text); background: var(--bg3); min-height: 100vh;
+    font: 17px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 130px max(16px, env(safe-area-inset-left));
+  }
+  /* fundalul cald, "interior luminat", peste care stau cardurile de sticla */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(55% 45% at 12% 8%, var(--bg2) 0%, transparent 70%),
+      radial-gradient(45% 40% at 88% 18%, var(--glow) 0%, transparent 70%),
+      radial-gradient(60% 55% at 70% 95%, var(--bg2) 0%, transparent 70%),
+      radial-gradient(40% 35% at 25% 75%, var(--glow) 0%, transparent 70%),
+      linear-gradient(160deg, var(--bg1) 0%, var(--bg3) 55%, var(--bg1) 100%);
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* sticla mata */
+  .glass, .card {
+    background: var(--glass); border: 1px solid var(--gborder); box-shadow: var(--gshadow);
+    -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%);
+  }
+  .card { border-radius: var(--r); padding: 20px; min-width: 0; }
+  .empty { color: var(--text2); font-size: 15px; }
+
+  /* bara de sus */
+  .topbar { display: flex; align-items: center; gap: 14px; border-radius: 999px; padding: 8px 10px 8px 22px; margin-bottom: 22px; }
+  .hello { flex: 1; min-width: 0; }
+  .hello b { display: block; font-size: 22px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hello span { font-size: 13px; color: var(--text2); }
+  .themeseg { display: flex; padding: 3px; border-radius: 999px; background: var(--fill); }
+  .themeseg button { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; font-size: 14px; color: var(--text2); }
+  .themeseg button .ic { font-size: 16px; }
+  .themeseg button.sel { background: var(--glass2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; background: var(--fill); font-size: 14px; color: var(--text2); white-space: nowrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); }
+  @media (max-width: 560px) { .themeseg button span { display: none; } .pill span:last-child { display: none; } .hello b { font-size: 18px; } }
+
+  /* navigare: verticala la stanga pe tableta, jos pe telefon */
+  .rail {
+    position: fixed; z-index: 6; display: flex; gap: 4px; padding: 7px;
+    left: 50%; transform: translateX(-50%); bottom: max(14px, env(safe-area-inset-bottom)); border-radius: 999px;
+  }
+  .rail button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; min-width: 60px;
+                 border-radius: 999px; color: var(--text2); font-size: 11px; font-weight: 600; transition: background .2s, color .2s; }
+  .rail .ic { font-size: 23px; }
+  .rail button.sel { background: var(--glass2); color: var(--accent); box-shadow: 0 4px 14px rgba(120,78,36,.18); }
+  @media (max-width: 420px) { .rail button { min-width: 0; padding: 8px 9px; } }
+  @media (min-width: 900px) {
+    body { padding-left: 116px; padding-bottom: 120px; }
+    .rail { left: 24px; top: 50%; bottom: auto; transform: translateY(-50%); flex-direction: column; gap: 10px; padding: 10px; }
+    .rail button { width: 58px; height: 58px; min-width: 0; padding: 0; justify-content: center; border-radius: 50%; }
+    .rail button span:last-child { display: none; }
+    .rail button.sel { background: #fff; color: var(--text); }
+    :root[data-theme="dark"] .rail button.sel { background: var(--glass2); color: var(--accent); }
+  }
+  @media (min-width: 900px) and (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .rail button.sel { background: var(--glass2); color: var(--accent); }
+  }
+
+  /* titluri si grile */
+  section { margin-top: 28px; }
+  section.first { margin-top: 0; }
+  .sechead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 6px 12px; }
+  h2 { font-size: 22px; font-weight: 700; letter-spacing: -.01em; margin: 0; }
+  .link { color: var(--accent); font-size: 15px; font-weight: 600; padding: 4px; }
+  .bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
+  .bento > * { grid-column: span 12; min-width: 0; }
+  .s3 { grid-column: span 6 !important; }
+  @media (min-width: 720px) { .s3 { grid-column: span 3 !important; } .s6 { grid-column: span 6 !important; } }
+  .page { animation: fade .25s ease; }
+  /* doar opacitate: un transform pe pagina ar face bara de camere (position: fixed) sa se fixeze de pagina, nu de ecran */
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  /* iconite */
+  .ic { display: inline-flex; width: 1em; height: 1em; flex: none; }
+  .ic svg { width: 100%; height: 100%; }
+  .badge { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none;
+           font-size: 19px; color: #fff; background: var(--gray); box-shadow: inset 0 1px 0 rgba(255,255,255,.3); }
+
+  /* comutator (portocaliu, ca in imagine) */
+  .switch { position: relative; width: 51px; height: 31px; flex: none; display: inline-block; }
+  .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--fill2); transition: background .2s; }
+  .switch span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%;
+    background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.18); transition: transform .2s; }
+  .switch input:checked + span { background: var(--accent); }
+  .switch input:checked + span::after { transform: translateX(20px); }
+  .switch input:disabled + span { opacity: .45; }
+
+  /* stepper - valoare + */
+  .stepper { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .stepper button, .rbtn { width: 44px; height: 44px; border-radius: 50%; background: var(--fill); padding: 0; line-height: 0;
+    color: var(--text); display: flex; align-items: center; justify-content: center; flex: none; }
+  .stepper button svg, .rbtn svg { width: 20px; height: 20px; display: block; }
+  .stepper button:active, .rbtn:active { background: var(--fill2); }
+  .stepper .val { font-size: 22px; font-weight: 600; text-align: center; min-width: 70px; }
+  .stepper.big .val { font-size: 64px; font-weight: 200; letter-spacing: -.03em; line-height: 1; }
+  .stepper.big button { width: 52px; height: 52px; }
+  .locked .stepper button { opacity: .3; pointer-events: none; }
+  /* butoane mari, langa valoare (boiler, aeroterma) */
+  .stepper.near { justify-content: center; gap: 20px; margin: 6px 0 4px; }
+  .stepper.near button { width: 64px; height: 64px; }
+  .stepper.near button svg { width: 28px; height: 28px; }
+  .stepper.near .val { font-size: 46px; font-weight: 300; letter-spacing: -.02em; min-width: 104px; }
+  .note { font-size: 13px; color: var(--text2); text-align: center; margin-top: 6px; min-height: 17px; }
+
+  /* control segmentat si chips */
+  .label { font-size: 13px; color: var(--text2); margin: 16px 2px 6px; }
+  .seg { display: grid; gap: 2px; padding: 3px; border-radius: 12px; background: var(--fill); }
+  .seg button { padding: 7px 2px; border-radius: 9px; font-size: 13px; font-weight: 500; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seg button.sel { background: var(--glass2); box-shadow: 0 2px 8px rgba(0,0,0,.10); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip { padding: 8px 16px; border-radius: 999px; background: var(--fill); font-size: 14px; font-weight: 500; }
+  .chip.sel { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(242,153,46,.35); }
+
+  /* carduri de aparat (paginile Clima / Apa calda) */
+  .chead { display: flex; align-items: center; gap: 12px; }
+  .ctitle { flex: 1; min-width: 0; }
+  .cname { display: block; font-size: 17px; font-weight: 600; padding: 0; text-align: left; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .csub { font-size: 13px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cbody { margin-top: 16px; transition: opacity .2s; }
+  .na .cbody, .na .sub { opacity: .4; pointer-events: none; }
+  .off .cbody { opacity: .55; }
+  .sub { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--sep); }
+  .subhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .subtitle { font-size: 15px; font-weight: 600; }
+  .subtitle small { display: block; font-size: 12px; font-weight: 400; color: var(--text2); }
+  .subbody { margin-top: 12px; transition: opacity .2s; }
+  .sub:not(.act) .subbody { opacity: .45; }
+  .row2 { display: flex; align-items: center; gap: 12px; }
+  .row2 > select { flex: 1; }
+  select { min-width: 0; width: 100%; padding: 10px 30px 10px 12px; border-radius: 12px; border: 0; background: var(--fill); font-size: 15px;
+    -webkit-appearance: none; appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--text2) 50%), linear-gradient(135deg, var(--text2) 50%, transparent 50%);
+    background-position: calc(100% - 17px) 55%, calc(100% - 12px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
+  select option { color: #222; }
+  .state { font-size: 14px; color: var(--text); margin-top: 12px; min-height: 19px; }
+
+  /* camere (pagina Clima) */
+  .room { display: flex; flex-direction: column; gap: 4px; padding: 16px; }
+  .rhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .rname { font-size: 15px; font-weight: 600; text-align: left; padding: 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fresh { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); white-space: nowrap; }
+  .fdot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); }
+  .fresh.ok .fdot { background: var(--green); } .fresh.old .fdot { background: var(--red); } .fresh.wait .fdot { background: var(--accent); }
+  .rtemp { font-size: 48px; font-weight: 300; letter-spacing: -.03em; line-height: 1.05; margin-top: 6px; }
+  .rhum { display: flex; align-items: center; gap: 6px; font-size: 16px; color: var(--teal); font-weight: 500; }
+  .rfoot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; font-size: 12px; color: var(--text2); }
+  .bat { display: inline-flex; align-items: center; gap: 5px; }
+  .batt { width: 22px; height: 11px; border: 1.5px solid var(--text2); border-radius: 3px; padding: 1px; position: relative; }
+  .batt::after { content: ""; position: absolute; right: -4px; top: 3px; width: 2px; height: 4px; border-radius: 1px; background: var(--text2); }
+  .batt i { display: block; height: 100%; border-radius: 1px; background: var(--green); }
+  .batt.low i { background: var(--red); }
+  .bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .bars i { width: 3px; border-radius: 1px; background: var(--fill2); }
+  .bars i:nth-child(1) { height: 4px; } .bars i:nth-child(2) { height: 6px; } .bars i:nth-child(3) { height: 9px; } .bars i:nth-child(4) { height: 12px; }
+  .bars i.on { background: var(--text2); }
+
+  /* ================= ACASA: dashboard ================= */
+  .dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
+  .dash > * { grid-column: span 12; min-width: 0; }
+  @media (min-width: 700px) {
+    .d-tv, .d-water, .d-light, .d-rstat, .d-temp, .d-fan, .d-heat, .d-wnow, .d-wdet { grid-column: span 6; }
+  }
+  @media (min-width: 980px) {
+    .d-clock { grid-column: span 5; } .d-tv { grid-column: span 3; } .d-water { grid-column: span 4; }
+    .d-rooms, .d-light { grid-column: span 4; }
+    .d-rstat, .d-temp, .d-fan, .d-heat { grid-column: span 4; }
+    .d-wnow { grid-column: span 5; } .d-wdet { grid-column: span 7; }
+  }
+  button.card { text-align: left; display: block; width: 100%; cursor: pointer; }
+  button.card:active { transform: scale(.99); }
+  .h-head { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 600; }
+  .h-head .grow { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .h-icon { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--glass2);
+            color: var(--accent); font-size: 19px; box-shadow: 0 2px 8px rgba(120,78,36,.12); }
+  .h-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+  /* ceas */
+  .d-clock { position: relative; overflow: hidden; display: flex !important; flex-direction: column; justify-content: space-between; min-height: 210px; }
+  .cl-date { font-size: 21px; font-weight: 600; position: relative; z-index: 1; }
+  .cl-time { font-size: 58px; font-weight: 600; letter-spacing: -.03em; line-height: 1; margin-top: 8px; position: relative; z-index: 1; }
+  /* temperaturile jos, ingrosate */
+  .cl-temps { display: flex; align-items: flex-end; gap: 28px; margin-top: 14px; position: relative; z-index: 1; }
+  .ct b { display: block; font-size: 32px; font-weight: 700; letter-spacing: -.02em; line-height: 1.05; }
+  .ct small { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-top: 2px; white-space: nowrap; }
+  .cl-art { position: absolute; right: 2px; top: 4px; width: 200px; height: 160px; pointer-events: none; }
+  .cl-art svg { width: 100%; height: 100%; }
+
+  .cl-in + .cl-in { margin-left: 22px; }
+  .d-clock { cursor: pointer; }
+
+  /* televizor pe Acasa: doar pornit / oprit */
+  .d-tv { display: flex; flex-direction: column; }
+  /* televizorul desenat e butonul de pornit / oprit */
+  .tvart { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0 4px; min-height: 0; border-radius: 18px; }
+  .tvart svg { width: 100%; max-width: 210px; display: block; filter: drop-shadow(0 12px 16px rgba(40,20,5,.28)); transition: transform .15s; }
+  .tvart:active svg { transform: scale(.95); }
+  .tvart .tv-pw { stroke: #ff6b4a; transition: stroke .2s; }
+  .tvart.flash .tv-pw { stroke: #fff; }
+  .tvart.miss svg { opacity: .45; }
+  .tvart.miss { box-shadow: inset 0 0 0 2px var(--text3); }
+
+  /* pagina TV: telecomanda */
+  @media (min-width: 980px) { .d-tvmain { grid-column: span 5; } .d-tvrock { grid-column: span 3; } .d-tvnum { grid-column: span 4; } }
+  @media (min-width: 700px) and (max-width: 979px) { .d-tvmain, .d-tvrock { grid-column: span 6; } }
+  .rk { height: 54px; border-radius: 16px; background: var(--fill); font-size: 15px; font-weight: 600; min-width: 0;
+        display: flex; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid transparent; }
+  .rk .ic { font-size: 22px; }
+  .rk:active { transform: scale(.95); background: var(--fill2); }
+  .rk.miss { background: transparent; border: 1.5px dashed var(--text3); color: var(--text3); }
+  .rk-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .rk.k-pow { background: radial-gradient(circle at 35% 30%, #ff8a5c, #e5482d); color: #fff; box-shadow: 0 6px 16px rgba(229,72,45,.3); }
+  .rk.k-pow.miss { background: transparent; color: var(--text3); box-shadow: none; }
+  .dpad { position: relative; width: 210px; height: 210px; margin: 22px auto 18px; border-radius: 50%; background: var(--fill); }
+  .dpad .rk { position: absolute; width: 64px; height: 64px; border-radius: 50%; background: transparent; }
+  .dpad .p0 { left: 73px; top: 4px; } .dpad .p1 { left: 4px; top: 73px; } .dpad .p3 { right: 4px; top: 73px; } .dpad .p4 { left: 73px; bottom: 4px; }
+  .dpad .p2 { left: 55px; top: 55px; width: 100px; height: 100px; background: var(--glass2); box-shadow: 0 6px 16px rgba(120,78,36,.18); font-size: 18px; }
+  .rk-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .rocks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .rock { display: flex; flex-direction: column; align-items: stretch; gap: 0; background: var(--fill); border-radius: 30px; overflow: hidden; }
+  .rock .rk { height: 76px; border-radius: 0; background: transparent; }
+  .rock-l { text-align: center; font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .05em; padding: 4px 0; }
+  .rk-apps { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
+  .rk.k-nf { color: #e50914; } .rk.k-yt { color: #ff0033; }
+  .rk.k-nf.miss, .rk.k-yt.miss { color: var(--text3); }
+  .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .numpad .rk { height: 60px; font-size: 22px; }
+  .numpad .k-zero { grid-column: 2; }
+  .kvlink { width: 100%; text-align: left; color: var(--accent); font-weight: 600; }
+
+  /* dalele camerelor */
+  .d-rooms { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+  .dev.rtile { min-height: 170px; justify-content: space-between; cursor: pointer; }
+  .rbig { font-size: 40px; font-weight: 300; letter-spacing: -.03em; line-height: 1; margin: 10px 0 4px; }
+  .dev .dv .bt { color: var(--text2); font-weight: 500; font-size: 13px; }
+
+  /* Lumina 1 / Lumina 2: tot cardul e butonul; lampa centrata se aprinde */
+  .d-light { display: flex; flex-direction: column; position: relative; overflow: hidden; cursor: pointer; user-select: none; -webkit-user-select: none;
+             transition: background .4s, transform .15s; }
+  .d-light.tap { transform: scale(.98); }
+  .d-light.on { background: linear-gradient(160deg, rgba(255,214,140,.55), var(--glass) 70%); }
+  .lart { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; padding: 6px 0; }
+  .lart svg { height: 180px; max-height: 100%; width: auto; display: block; filter: drop-shadow(0 12px 14px rgba(110,60,20,.22)); }
+  .lart .l-glow, .lart .l-cone, .lart .l-on, .lart .l-rim { opacity: 0; transition: opacity .45s; }
+  .d-light.on .l-glow, .d-light.on .l-on, .d-light.on .l-rim { opacity: 1; }
+  .d-light.on .l-cone { opacity: .85; }
+  .lhint { font-size: 13px; color: var(--text2); text-align: center; min-height: 17px; }
+  .d-light.miss .lart { opacity: .45; }
+
+  /* randul de jos: Hol, Scari, Bucatarie, Terasa - becul se aprinde, tot cardul comuta */
+  .d-lights4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
+  @media (max-width: 699px) { .d-lights4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .slight { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px 12px;
+            min-height: 150px; text-align: center; cursor: pointer; user-select: none; -webkit-user-select: none;
+            transition: background .4s, transform .15s; min-width: 0; }
+  .slight.tap { transform: scale(.97); }
+  .slight.on { background: linear-gradient(160deg, rgba(255,214,140,.6), var(--glass) 80%); }
+  .sbulb { width: 58px; height: 76px; flex: none; }
+  .sbulb svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .sbulb .b-glass { fill: #ece5dd; stroke: #b9ab9d; stroke-width: 1.5; transition: fill .35s, stroke .35s; }
+  .sbulb .b-glow { opacity: 0; transition: opacity .35s; }
+  .slight.on .b-glass { fill: #ffd36b; stroke: #f2a33a; }
+  .slight.on .b-glow { opacity: 1; }
+  .slight > div:last-child { width: 100%; }
+  .slight .sn { font-size: 18px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slight .ss { font-size: 13px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slight.miss .sbulb { opacity: .4; }
+  .slight.miss { box-shadow: inset 0 0 0 2px var(--text3), var(--gshadow); }
+
+  /* ventilatorul de la semineu (pagina camerei): butoane Pornit / Oprit, elicele se rotesc cand merge */
+  .d-fan { display: flex; flex-direction: column; transition: background .4s; }
+  .fanbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fanb { height: 64px; border-radius: 18px; background: var(--fill); font-size: 17px; font-weight: 600;
+          display: flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid transparent; }
+  .fanb .ic { font-size: 20px; }
+  .fanb:active { transform: scale(.96); }
+  .fanb.fb-on.sel { background: var(--accent); color: #fff; box-shadow: 0 6px 16px rgba(242,153,46,.38); }
+  .fanb.fb-off.sel { background: var(--glass2); box-shadow: 0 4px 12px rgba(120,78,36,.15); }
+  .fanb.miss { background: transparent; border: 2px dashed var(--text3); color: var(--text3); box-shadow: none; }
+  /* priza Xiaomi a aerotermei (cardul Aeroterma din Bedroom) */
+  .plugrow { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 10px 12px; border-radius: 16px; background: var(--fill); }
+  .plugrow .pi { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; flex: none;
+                 background: var(--glass2); color: var(--text2); }
+  .plugrow.on .pi { background: var(--accent); color: #fff; }
+  .plugrow .pt { flex: 1; min-width: 0; }
+  .plugrow .pt b { display: block; font-size: 15px; }
+  .plugrow .pt span { font-size: 13px; color: var(--text2); }
+  .plugrow .pw { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* aerul conditionat IR din Living: Pornit / Oprit + comenzi salvate (fiecare = un cod IR cu toata starea) */
+  .irart { display: flex; justify-content: center; padding: 18px 0 14px; }
+  .irart svg { width: 82%; max-width: 280px; display: block; filter: drop-shadow(0 10px 14px rgba(80,50,20,.18)); }
+  .irpre { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .irpre .chip { padding: 10px 16px; font-size: 15px; }
+  .irpre .add { background: transparent; border: 1.5px dashed var(--text3); color: var(--text2); }
+  .d-fan.on { background: linear-gradient(160deg, rgba(255,190,120,.5), var(--glass) 70%); }
+  .fart { flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px 0; min-height: 0; }
+  .fart svg { height: 230px; max-height: 100%; width: auto; display: block; filter: drop-shadow(0 12px 14px rgba(110,60,20,.22)); }
+  .fart .blades { transform-box: view-box; transform-origin: 80px 72px; }
+  .d-fan.on .fart .blades { animation: spin .7s linear infinite; }
+  .fart .warm { opacity: 0; transition: opacity .4s; }
+  .d-fan.on .fart .warm { opacity: 1; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* inapoi (paginile Camera / Vremea) */
+  .backrow { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 16px; }
+  .back { padding: 10px 18px 10px 14px; border-radius: 999px; font-size: 15px; font-weight: 600; }
+
+  /* pagina camerei */
+  .rs-big { display: flex; align-items: flex-end; gap: 20px; margin-top: 16px; }
+  .rs-t { font-size: 76px; font-weight: 200; letter-spacing: -.04em; line-height: .95; }
+  .rs-h { display: flex; align-items: center; gap: 6px; font-size: 26px; font-weight: 500; color: var(--teal); padding-bottom: 6px; }
+  .rs-list { margin-top: 18px; }
+  .rs-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-top: 1px solid var(--sep); font-size: 15px; }
+  .rs-row span:last-child { color: var(--text2); }
+
+  /* pagina vremii */
+  .wn { display: flex; align-items: center; gap: 16px; }
+  .wn-art { width: 130px; height: 130px; flex: none; }
+  .wn-art svg, .wa svg { width: 100%; height: 100%; display: block; }
+  .wn-t { font-size: 78px; font-weight: 200; letter-spacing: -.04em; line-height: 1; }
+  .wn-d { font-size: 20px; font-weight: 600; }
+  .wn-s { font-size: 14px; color: var(--text2); margin-top: 4px; }
+  .wdet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .wtile { padding: 12px 14px; border-radius: 16px; background: var(--fill); min-width: 0; }
+  .wtile .wl { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: .03em; }
+  .wtile .wv { font-size: 24px; font-weight: 600; margin-top: 4px; }
+  .whours { display: flex; gap: 4px; overflow-x: auto; margin-top: 12px; padding-bottom: 4px; scrollbar-width: thin; }
+  .wh { flex: none; width: 60px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; border-radius: 16px; font-size: 13px; color: var(--text2); }
+  .wh.now { background: var(--fill); color: var(--text); font-weight: 600; }
+  .wh .wa { width: 34px; height: 34px; }
+  .wh .wt { font-size: 17px; font-weight: 600; color: var(--text); }
+  .wp { font-size: 11px; color: var(--blue); min-height: 14px; font-weight: 600; }
+  .wday { display: grid; grid-template-columns: 72px 36px 40px 40px minmax(0, 1fr) 40px; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--sep); font-size: 16px; }
+  .wday .wa { width: 34px; height: 34px; }
+  .wday .wdn { font-weight: 600; text-transform: capitalize; }
+  .wday .lo { color: var(--text2); text-align: right; }
+  .wday .hi { font-weight: 600; }
+  .wbar { position: relative; height: 6px; border-radius: 3px; background: var(--fill2); }
+  .wbar i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #5aaef0, #f7b23b, #f2742e); }
+  .d-wfull .h-head { font-size: 16px; }
+  @media (max-width: 560px) {
+    .wdet { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .wday { grid-template-columns: 54px 30px 34px 34px minmax(0, 1fr) 34px; gap: 8px; font-size: 14px; }
+    .wn-art { width: 96px; height: 96px; } .wn-t { font-size: 60px; }
+  }
+  .bignum { font-size: 40px; font-weight: 600; letter-spacing: -.02em; line-height: 1; white-space: nowrap; }
+  .bignum small { font-size: 18px; font-weight: 500; color: var(--text2); }
+
+  /* apa calda: grafic cu bare */
+  .w-row { display: flex; align-items: flex-end; gap: 16px; margin-top: 16px; }
+  .chart { flex: 1; display: grid; grid-template-columns: 26px repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; height: 130px; }
+  .axis { display: flex; flex-direction: column; justify-content: space-between; height: 108px; font-size: 11px; color: var(--text3); align-self: start; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .track { position: relative; width: 26px; height: 108px; border-radius: 13px; background: var(--fill2); }
+  .track i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 13px; background: linear-gradient(to top, var(--accent), var(--accent2)); transition: height .6s; }
+  .track.tgt i { background: repeating-linear-gradient(45deg, var(--fill2), var(--fill2) 4px, transparent 4px, transparent 8px); box-shadow: inset 0 0 0 2px var(--accent); }
+  .bubble { position: absolute; left: 50%; transform: translate(-50%, -125%); padding: 3px 7px; border-radius: 8px; background: var(--glass2);
+            font-size: 11px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+  .col .lb { font-size: 12px; color: var(--text2); white-space: nowrap; }
+  .chart { min-width: 0; }
+
+  /* dale de aparate */
+  .d-devs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+  .dev { display: flex; flex-direction: column; gap: 2px; padding: 14px; min-height: 196px; text-align: left; }
+  .dev .dtop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .dev .dic { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; flex: none;
+              background: var(--glass2); color: var(--text2); box-shadow: 0 2px 8px rgba(120,78,36,.12); transition: background .2s, color .2s; }
+  .dev .dic.on { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(242,153,46,.4); }
+  .dev .art { height: 52px; margin: 6px 0 8px; display: flex; align-items: center; justify-content: center; }
+  .dev .art svg { max-width: 100%; max-height: 100%; filter: drop-shadow(0 8px 10px rgba(80,50,20,.18)); }
+  .dev .dn { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dev .dv { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; }
+  .dev .dv span { display: inline-flex; align-items: center; gap: 3px; }
+  .dev .dv .ic { font-size: 14px; color: var(--accent); }
+  .dev .dv .hu .ic { color: var(--teal); }
+  .dev .ds { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dev .go { color: var(--text3); font-size: 24px; line-height: 1; padding: 0 4px; }
+  .dev:active { transform: scale(.985); }
+
+  /* cadranul de temperatura */
+  .d-temp .h-head { margin-bottom: 4px; }
+  .t-room { text-align: center; font-size: 15px; color: var(--text2); margin-top: 8px; }
+  .t-room b { color: var(--text); font-weight: 600; }
+  .dial-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 4px; }
+  .dial { position: relative; width: 200px; height: 200px; flex: none; }
+  .dial svg { width: 100%; height: 100%; }
+  .dial .tk { stroke: var(--text3); stroke-width: 2.2; stroke-linecap: round; opacity: .55; }
+  .dial .tk.on { stroke: var(--accent); opacity: 1; }
+  .knob { position: absolute; left: 50%; top: 50%; width: 104px; height: 104px; transform: translate(-50%, -50%); border-radius: 50%;
+          background: radial-gradient(circle at 35% 30%, var(--knob1), var(--knob2)); color: #fff; display: grid; place-items: center; text-align: center;
+          box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.15); }
+  .knob b { display: block; font-size: 26px; font-weight: 600; letter-spacing: -.02em; line-height: 1; }
+  .knob small { display: block; font-size: 11px; opacity: .7; margin-top: 3px; }
+  .t-toggles { display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--sep); }
+  .t-tg { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+  .t-tg .tl { display: flex; align-items: center; gap: 6px; }
+  .t-div { width: 1px; height: 46px; background: var(--sep); }
+  .modes { display: flex; justify-content: space-between; gap: 6px; margin-top: 14px; }
+  .modes button { width: 48px; height: 48px; border-radius: 50%; background: var(--fill); display: grid; place-items: center; font-size: 21px; color: var(--text2); }
+  .modes button.sel { background: var(--accent); color: #fff; box-shadow: 0 6px 16px rgba(242,153,46,.4); }
+  .d-temp.noac .dial-row, .d-temp.noac .t-toggles, .d-temp.noac .modes { opacity: .35; pointer-events: none; }
+
+  /* aeroterma: arc + praguri */
+  .d-heat { position: relative; overflow: hidden; }
+  .heat-body { display: flex; align-items: flex-end; gap: 6px; margin-top: 10px; }
+  .arcbox { flex: 1; min-width: 0; }
+  .arcbox svg { width: 100%; max-width: 230px; display: block; }
+  .arc-t { stroke: var(--fill2); stroke-width: 13; fill: none; stroke-linecap: round; }
+  .arc-v { stroke: var(--accent); stroke-width: 13; fill: none; stroke-linecap: round; transition: d .5s; }
+  .arc-k { fill: #fff; stroke: var(--accent); stroke-width: 4; }
+  .arc-m { stroke: var(--text); stroke-width: 3; stroke-linecap: round; }
+  .arc-lbl { display: flex; justify-content: space-between; max-width: 230px; font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .heat-art { width: 96px; flex: none; }
+  .heat-art svg { width: 100%; display: block; filter: drop-shadow(0 10px 14px rgba(120,60,10,.25)); }
+  .heat-now { font-size: 15px; color: var(--text2); margin-top: 10px; }
+  .heat-now b { font-size: 30px; font-weight: 600; color: var(--text); letter-spacing: -.02em; }
+
+  /* boiler: rezervoare (pagina Apa calda) */
+  .tanks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .tank { display: flex; align-items: flex-end; gap: 12px; padding: 12px; border-radius: 18px; background: var(--fill); }
+  .gauge { width: 26px; height: 92px; border-radius: 13px; background: var(--fill2); position: relative; overflow: hidden; flex: none; }
+  .gauge i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 13px; background: linear-gradient(to top, var(--accent), var(--accent2)); transition: height .6s; }
+  .tank .tl { font-size: 13px; color: var(--text2); }
+  .tank .tv { font-size: 36px; font-weight: 300; letter-spacing: -.02em; line-height: 1.1; }
+  .tank .th { font-size: 12px; color: var(--accent); font-weight: 600; min-height: 15px; }
+  .tank.hot { box-shadow: inset 0 0 0 2px var(--accent); }
+
+  /* telecomanda */
+  .codes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+  .code { position: relative; display: flex; align-items: center; gap: 10px; padding: 14px 36px 14px 14px; border-radius: 18px; background: var(--fill); text-align: left; min-width: 0; }
+  .code:active { background: var(--fill2); }
+  .code .cn { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .code .ct { font-size: 11px; color: var(--text2); }
+  .code .x { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; color: var(--text3); font-size: 17px; display: grid; place-items: center; }
+  .learn { display: grid; grid-template-columns: minmax(0, 1fr) 120px auto; gap: 10px; margin-top: 16px; align-items: center; }
+  @media (max-width: 520px) { .learn { grid-template-columns: 1fr 1fr; } .learn input { grid-column: span 2; } }
+  .learn input { padding: 11px 14px; border-radius: 14px; border: 0; background: var(--fill); font-size: 16px; min-width: 0; }
+  .btn { padding: 11px 18px; border-radius: 14px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 600; white-space: nowrap; }
+  .btn.gray { background: var(--fill); color: var(--accent); }
+  .dbg { font-size: 12px; color: var(--text3); margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+  /* sistem */
+  .kv { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--sep); font-size: 15px; }
+  .kv span:last-child { color: var(--text2); }
+  .leds { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  .leds button { padding: 10px 0; border-radius: 14px; background: var(--fill); font-size: 14px; font-weight: 500; }
+  .leds button.sel { box-shadow: inset 0 0 0 2px var(--c); }
+
+  /* mesaj si dialog */
+  .toast { position: fixed; left: 50%; bottom: calc(max(14px, env(safe-area-inset-bottom)) + 84px); transform: translate(-50%, 40px); opacity: 0; pointer-events: none;
+    max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 16px; font-size: 15px; background: rgba(40,28,20,.9); color: #fff;
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); transition: transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s; z-index: 10; text-align: center; }
+  .toast.show { transform: translate(-50%, 0); opacity: 1; }
+  dialog { border: 0; border-radius: 18px; padding: 0; width: min(320px, calc(100% - 40px)); background: var(--glass2); color: var(--text);
+           -webkit-backdrop-filter: blur(30px); backdrop-filter: blur(30px); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  dialog::backdrop { background: rgba(40,25,10,.3); }
+  .dlgin { padding: 20px 18px 14px; text-align: center; }
+  .dlgin b { display: block; font-size: 17px; margin-bottom: 4px; }
+  .dlgin p { margin: 0 0 14px; font-size: 13px; color: var(--text2); }
+  .dlgin select { text-align: left; }
+  .mqform input { width: 100%; margin-top: 4px; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--sep); background: var(--fill); font-size: 16px; }
+  .mqform .label { margin-top: 12px; }
+  .dlgin input { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--sep); background: var(--fill); font-size: 16px; }
+  .dlgbtn { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--sep); }
+  .dlgbtn button { padding: 13px; color: var(--accent); font-size: 17px; }
+  .dlgbtn button + button { border-left: 1px solid var(--sep); font-weight: 600; }
+</style>
+</head>
+<body>
+<!-- Gradientii desenelor 3D (vreme, lampa), definiti o singura data: un gradient definit intr-un SVG
+     de pe o pagina ascunsa (display:none) nu se mai vede in desenele de pe celelalte pagini. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="x3sun" cx=".36" cy=".32" r=".75"><stop offset="0" stop-color="#fff7c9"/><stop offset=".35" stop-color="#ffd457"/><stop offset=".8" stop-color="#ffa11c"/><stop offset="1" stop-color="#f07b0e"/></radialGradient>
+    <radialGradient id="x3glow" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#ffc94a" stop-opacity=".55"/><stop offset="1" stop-color="#ffc94a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="x3cl" cx=".38" cy=".28" r=".85"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#f3efeb"/><stop offset="1" stop-color="#cfc7bf"/></radialGradient>
+    <linearGradient id="x3clb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f4f1"/><stop offset="1" stop-color="#c9c0b7"/></linearGradient>
+    <radialGradient id="x3cld" cx=".38" cy=".28" r=".85"><stop offset="0" stop-color="#e9e6e3"/><stop offset=".6" stop-color="#bcb5ae"/><stop offset="1" stop-color="#8f877f"/></radialGradient>
+    <linearGradient id="x3drop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fdcff"/><stop offset="1" stop-color="#2a86dc"/></linearGradient>
+    <linearGradient id="x3bolt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff07a"/><stop offset="1" stop-color="#f59a10"/></linearGradient>
+    <radialGradient id="x3moon" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fffbea"/><stop offset=".6" stop-color="#f4dc9e"/><stop offset="1" stop-color="#d9b25c"/></radialGradient>
+    <filter id="x3sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#6b4a2a" flood-opacity=".22"/></filter>
+    <radialGradient id="lGlow" cx=".5" cy=".35" r=".55"><stop offset="0" stop-color="#ffe4a3" stop-opacity=".95"/><stop offset="1" stop-color="#ffe4a3" stop-opacity="0"/></radialGradient>
+    <linearGradient id="lCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe2a0" stop-opacity=".75"/><stop offset="1" stop-color="#ffe2a0" stop-opacity="0"/></linearGradient>
+    <linearGradient id="lOff" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8c3a9"/><stop offset="1" stop-color="#a68c70"/></linearGradient>
+    <linearGradient id="lOn" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd08a"/><stop offset=".6" stop-color="#ffa53c"/><stop offset="1" stop-color="#e57b1d"/></linearGradient>
+  </defs>
+</svg>
+
+<nav class="rail glass" id="rail"></nav>
+
+<div class="wrap">
+  <header class="topbar glass">
+    <div class="hello"><b id="greet">Bună!</b><span id="title">Acasă</span></div>
+    <div class="themeseg" id="themeseg"></div>
+    <div class="pill"><span class="dot" id="dot"></span><span id="netTxt">conectare…</span></div>
+  </header>
+
+  <!-- ACASA -->
+  <main class="page" id="pg-home">
+    <div class="dash" id="homeDash">
+      <button class="card d-clock" id="dClock">
+        <div class="cl-art" id="hArt"></div>
+        <div class="cl-date" id="hDate"></div>
+        <div class="cl-time num" id="hTime"></div>
+        <div class="cl-temps">
+          <div class="ct"><b class="num" id="hOut">--</b><small id="hOutLbl">afară</small></div>
+          <div class="ct"><b class="num" id="hAvg">--</b><small>media în casă</small></div>
+        </div>
+      </button>
+
+      <div class="card d-tv" id="dTv"></div>
+
+      <button class="card d-water" id="dWater">
+        <div class="h-head"><span class="h-icon" id="wIcon"></span><span class="grow">Apă caldă</span></div>
+        <div class="w-row">
+          <div class="chart" id="wChart"></div>
+          <div><div class="bignum num" id="wBig">--</div><div class="h-sub" id="wSub"></div></div>
+        </div>
+      </button>
+
+      <div class="card d-light" id="light1"></div>
+      <div class="card d-light" id="light2"></div>
+
+      <div class="d-rooms" id="roomTiles"></div>
+
+      <div class="d-lights4" id="lights4"></div>
+    </div>
+  </main>
+
+  <!-- CAMERA (din dalele de pe Acasa) -->
+  <main class="page" id="pg-camera" hidden>
+    <div class="backrow"><button class="back glass" id="roomBack">‹ Acasă</button></div>
+    <div class="dash">
+      <div class="card d-rstat" id="rStat"></div>
+
+      <div class="card d-temp noac" id="dTemp">
+        <div class="h-head"><span class="h-icon" id="tIcon"></span>
+          <div class="grow"><div>Aer condiționat</div><div class="h-sub" id="tSub"></div></div>
+          <label class="switch"><input type="checkbox" id="tPow"><span></span></label>
+        </div>
+        <div class="t-room" id="tRoom"></div>
+        <div class="dial-row">
+          <button class="rbtn" id="tMinus" aria-label="mai puțin"></button>
+          <div class="dial"><svg viewBox="0 0 200 200" id="tTicks"></svg><div class="knob"><div><b class="num" id="tVal">--</b><small id="tValLbl"></small></div></div></div>
+          <button class="rbtn" id="tPlus" aria-label="mai mult"></button>
+        </div>
+        <div class="t-toggles">
+          <div class="t-tg"><span class="tl" id="tSwingL">Swing</span><label class="switch"><input type="checkbox" id="tSwing"><span></span></label></div>
+          <div class="t-div"></div>
+          <div class="t-tg"><span class="tl" id="tAutoL">Auto</span><label class="switch"><input type="checkbox" id="tAuto"><span></span></label></div>
+        </div>
+        <div class="modes" id="tModes"></div>
+      </div>
+
+      <div class="card d-fan" id="dFan"></div>
+
+      <div class="card d-fan" id="dIrac"></div>
+
+      <div class="card d-heat" id="dHeat">
+        <div class="h-head"><span class="h-icon" id="aIcon"></span>
+          <div class="grow"><div>Aerotermă</div><div class="h-sub" id="aSub"></div></div>
+          <label class="switch"><input type="checkbox" id="aOn"><span></span></label>
+        </div>
+        <div class="plugrow" id="aPlug"></div>
+        <div id="aChips"></div>
+        <div class="heat-body">
+          <div class="arcbox">
+            <div class="heat-now" id="aNow"></div>
+            <svg viewBox="0 0 220 120" id="aArc">
+              <path class="arc-t" d="M20 110 A90 90 0 0 1 200 110"/>
+              <path class="arc-v" id="aArcV" d="M20 110 A90 90 0 0 1 20 110"/>
+              <line class="arc-m" id="aMark" x1="0" y1="0" x2="0" y2="0"/>
+              <circle class="arc-k" id="aKnob" cx="20" cy="110" r="9"/>
+            </svg>
+            <div class="arc-lbl"><span>10°</span><span>30°</span></div>
+          </div>
+          <div class="heat-art" id="aArt"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- VREMEA (din cardul cu ceasul) -->
+  <main class="page" id="pg-vreme" hidden>
+    <div class="backrow"><button class="back glass" id="wxBack">‹ Acasă</button><button class="link" id="wxCity">Schimbă orașul</button></div>
+    <div class="dash">
+      <div class="card d-wnow" id="wxNow"></div>
+      <div class="card d-wdet" id="wxDet"></div>
+      <div class="card d-wfull" id="wxHours"></div>
+      <div class="card d-wfull" id="wxDays"></div>
+    </div>
+  </main>
+
+  <!-- TV: telecomanda completa (in meniu, in locul Climatizarii) -->
+  <main class="page" id="pg-tv" hidden>
+    <div class="dash">
+      <div class="card d-tvmain" id="tvMain"></div>
+      <div class="card d-tvrock" id="tvRock"></div>
+      <div class="card d-tvnum" id="tvNum"></div>
+    </div>
+  </main>
+
+  <!-- CLIMA: setari avansate (aere, termostate, aeroterma); se deschide din Sistem -->
+  <main class="page" id="pg-clima" hidden>
+    <section class="first">
+      <div class="sechead"><h2>Camere</h2></div>
+      <div class="bento" id="rooms"></div>
+    </section>
+    <section>
+      <div class="sechead"><h2>Aer condiționat</h2><button class="link" id="scan">Caută din nou</button></div>
+      <div class="bento" id="acs"><div class="card empty">Caut aerele condiționate în rețea…</div></div>
+    </section>
+    <section>
+      <div class="sechead"><h2>Aerotermă automată</h2></div>
+      <div class="bento"><div class="card s6" id="ru"></div></div>
+    </section>
+  </main>
+
+  <!-- APA CALDA -->
+  <main class="page" id="pg-apa" hidden>
+    <section class="first"><div class="card na" id="bo"></div></section>
+  </main>
+
+  <!-- TELECOMANDA -->
+  <main class="page" id="pg-tel" hidden>
+    <section class="first"><div class="card na" id="tel"></div></section>
+  </main>
+
+  <!-- SISTEM -->
+  <main class="page" id="pg-sys" hidden>
+    <section class="first">
+      <div class="card" id="sys">
+        <button class="kv kvlink" id="toClima"><span>Climatizare: aere, termostate, aerotermă</span><span>›</span></button>
+        <div id="sysInfo"></div>
+        <div class="label">Test comandă: LED-ul de pe placă</div>
+        <div class="leds" id="leds"></div>
+      </div>
+      <div class="card" id="pres"></div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="msg"></div>
+<dialog id="dlg">
+  <form method="dialog">
+    <div class="dlgin"><b id="dlgTitle">Redenumește</b><p id="dlgHint">Gol = numele inițial</p><input id="dlgInput" maxlength="40" autocomplete="off"></div>
+    <div class="dlgbtn"><button value="cancel">Anulează</button><button value="ok">Salvează</button></div>
+  </form>
+</dialog>
+<dialog id="dlgPick">
+  <form method="dialog">
+    <div class="dlgin"><b id="pickTitle"></b><p id="pickHint"></p><select id="pickSel"></select></div>
+    <div class="dlgbtn"><button value="cancel">Anulează</button><button value="ok">Continuă</button></div>
+  </form>
+</dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+const FRESH = 15 * 60;                 // secunde; peste atat valoarea unui senzor e veche
+
+// zoom blocat si acolo unde browserul ignora user-scalable=no (Safari pe iPad/iPhone) sau pe PC (Ctrl + rotita / + / -)
+['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
+document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+document.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].includes(e.key)) e.preventDefault();
+});
+
+function el(tag, cls, parent) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+// ---------------- iconite (doar texte fixe) ----------------
+const ICONS = {
+  thermo: 'M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z',
+  drop: 'M12 3.5s-6 6.2-6 10.5a6 6 0 0 0 12 0c0-4.3-6-10.5-6-10.5z',
+  snow: 'M12 2v20M4.9 6l14.2 12M19.1 6L4.9 18M9 3.8l3 2 3-2M9 20.2l3-2 3 2',
+  flame: 'M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .5 2 1.5 3 2.5 3 0-3-1-5.5 0-8z',
+  fan: 'M12 12m-1.6 0a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0M12 10.4C12 6 13 4 16 4c2 0 2 3-1.4 5M13.6 12c4.4 0 6.4 1 6.4 4 0 2-3 2-5-1.4M12 13.6c0 4.4-1 6.4-4 6.4-2 0-2-3 1.4-5M10.4 12C6 12 4 11 4 8c0-2 3-2 5 1.4',
+  auto: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  remote: 'M9 2h6a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 6.5v.01M10 11h4M10 15h4',
+  heater: 'M4 6h16v12H4zM8 6v12M12 6v12M16 6v12M7 21h10',
+  home: 'M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+  gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
+  sun: 'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4',
+  moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
+  wind: 'M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7',
+  tv: 'M3 6h18v11H3zM8 21h8M12 17v4',
+  power: 'M12 3v8M6.3 6.3a8 8 0 1 0 11.4 0',
+  source: 'M10 17l5-5-5-5M15 12H3M21 4v16',
+  mute: 'M11 5L6 9H3v6h3l5 4zM22 9l-6 6M16 9l6 6',
+  bulb: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z',
+  umbrella: 'M12 3a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9zM12 12v7a2 2 0 0 0 4 0',
+  sunrise: 'M12 2v6M8 6l4-4 4 4M3 18h18M5 14a7 7 0 0 1 14 0',
+  sunset: 'M12 8V2M8 4l4 4 4-4M3 18h18M5 14a7 7 0 0 1 14 0',
+  up: 'M6 15l6-6 6 6', down: 'M6 9l6 6 6-6', left: 'M15 6l-6 6 6 6', right: 'M9 6l6 6-6 6',
+  back: 'M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3', menu: 'M4 7h16M4 12h16M4 17h16',
+  plus: 'M12 5v14M5 12h14', minus: 'M5 12h14',
+};
+function icon(name) {
+  const s = document.createElement('span');
+  s.className = 'ic';
+  s.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="' + ICONS[name] + '"/></svg>';
+  return s;
+}
+function setIcon(elm, name) { elm.textContent = ''; elm.appendChild(icon(name)); }
+function badge(parent, name, color) { const b = el('div', 'badge', parent); setBadge(b, name, color); return b; }
+function setBadge(b, name, color) { setIcon(b, name); b.style.background = color; }
+const SIGN = d => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="' + d + '"/></svg>';
+const MINUS = SIGN('M5 12h14'), PLUS = SIGN('M5 12h14M12 5v14');
+
+// ilustratii pentru dalele de aparate (desene simple, in locul pozelor)
+const ART = {
+  ac: '<svg viewBox="0 0 140 60"><defs><linearGradient id="gAc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e2ddd8"/></linearGradient></defs><rect x="4" y="8" width="132" height="40" rx="10" fill="url(#gAc)" stroke="#d6cfc8"/><rect x="14" y="38" width="112" height="4" rx="2" fill="#c9c1b9"/><rect x="14" y="44" width="112" height="2" rx="1" fill="#ddd6cf"/><circle cx="120" cy="20" r="2" fill="#7fd08f"/><rect x="18" y="16" width="20" height="3" rx="1.5" fill="#d9d2cb"/></svg>',
+  boiler: '<svg viewBox="0 0 70 90"><defs><linearGradient id="gBo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e6e0da"/><stop offset=".45" stop-color="#fff"/><stop offset="1" stop-color="#d8d1ca"/></linearGradient></defs><rect x="12" y="4" width="46" height="80" rx="20" fill="url(#gBo)" stroke="#d3cbc3"/><rect x="25" y="30" width="20" height="12" rx="3" fill="#2b2522"/><text x="35" y="39.5" font-size="8" fill="#ffb45a" text-anchor="middle" font-family="sans-serif">60</text><rect x="28" y="84" width="4" height="5" fill="#bdb4ab"/><rect x="38" y="84" width="4" height="5" fill="#bdb4ab"/></svg>',
+  remote: '<svg viewBox="0 0 60 90"><defs><linearGradient id="gRe" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a423c"/><stop offset="1" stop-color="#1f1a17"/></linearGradient></defs><rect x="14" y="4" width="32" height="82" rx="12" fill="url(#gRe)"/><circle cx="30" cy="18" r="4" fill="#ff6b4a"/><circle cx="30" cy="38" r="8" fill="none" stroke="#7a706a" stroke-width="2"/><circle cx="22" cy="58" r="2.6" fill="#8b817a"/><circle cx="30" cy="58" r="2.6" fill="#8b817a"/><circle cx="38" cy="58" r="2.6" fill="#8b817a"/><circle cx="22" cy="68" r="2.6" fill="#8b817a"/><circle cx="30" cy="68" r="2.6" fill="#8b817a"/><circle cx="38" cy="68" r="2.6" fill="#8b817a"/></svg>',
+  heater: '<svg viewBox="0 0 100 110"><defs><linearGradient id="gHe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb35c"/><stop offset="1" stop-color="#e07a1f"/></linearGradient><radialGradient id="gHg" cx=".5" cy=".55" r=".5"><stop offset="0" stop-color="#ffe2a8"/><stop offset="1" stop-color="#ff8a2a"/></radialGradient></defs><rect x="10" y="10" width="80" height="78" rx="18" fill="url(#gHe)"/><rect x="22" y="22" width="56" height="48" rx="10" fill="url(#gHg)"/><path d="M30 30v32M40 30v32M50 30v32M60 30v32M70 30v32" stroke="#e8822a" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="79" r="4" fill="#fff4e3"/><rect x="24" y="88" width="10" height="12" rx="3" fill="#6b4a33"/><rect x="66" y="88" width="10" height="12" rx="3" fill="#6b4a33"/></svg>',
+  sun: '<svg viewBox="0 0 200 170"><defs><radialGradient id="gSun" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#f59a1e"/></radialGradient><linearGradient id="gCl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e9e2db"/></linearGradient></defs><g stroke="#f7b23b" stroke-width="5" stroke-linecap="round"><path d="M128 22v-14M158 34l10-10M170 64h14M98 34l-10-10"/></g><circle cx="128" cy="64" r="32" fill="url(#gSun)"/><path d="M60 128h86a24 24 0 0 0 0-48 34 34 0 0 0-64-6 26 26 0 0 0-22 54z" fill="url(#gCl)" opacity=".95"/></svg>',
+  moon: '<svg viewBox="0 0 200 170"><defs><radialGradient id="gMo" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#fff7e0"/><stop offset="1" stop-color="#e8c98a"/></radialGradient></defs><circle cx="150" cy="30" r="2" fill="#f3d9a6"/><circle cx="70" cy="40" r="1.6" fill="#f3d9a6"/><circle cx="175" cy="95" r="1.8" fill="#f3d9a6"/><path d="M150 100A44 44 0 1 1 106 36a34 34 0 0 0 44 64z" fill="url(#gMo)"/></svg>',
+};
+
+function ago(s) {
+  if (s < 0) return 'fără date';
+  if (s < 60) return 'acum ' + s + ' s';
+  if (s < 3600) return 'acum ' + Math.floor(s / 60) + ' min';
+  return 'acum ' + Math.floor(s / 3600) + ' h';
+}
+function deg(elm, v, dec) { elm.textContent = v === null || v === undefined || v < -50 ? '--' : (dec ? v.toFixed(dec) : v) + '°'; }
+
+function makeSwitch(parent, onChange) {
+  const l = el('label', 'switch', parent);
+  const i = el('input', '', l);
+  i.type = 'checkbox';
+  el('span', '', l);
+  l.addEventListener('click', e => e.stopPropagation());       // in dale: nu deschide pagina
+  i.addEventListener('change', () => onChange(i.checked, i));
+  return i;
+}
+function makeStepper(parent, cls, onStep) {
+  const w = el('div', 'stepper ' + (cls || ''), parent);
+  const m = el('button', '', w); m.innerHTML = MINUS; m.setAttribute('aria-label', 'mai puțin');
+  const v = el('div', 'val num', w);
+  const p = el('button', '', w); p.innerHTML = PLUS; p.setAttribute('aria-label', 'mai mult');
+  m.addEventListener('click', () => onStep(-1));
+  p.addEventListener('click', () => onStep(1));
+  return v;
+}
+function segment(parent, items, onPick) {
+  const s = el('div', 'seg', parent);
+  s.style.gridTemplateColumns = 'repeat(' + items.length + ', minmax(0, 1fr))';
+  return items.map(([t, v]) => {
+    const b = el('button', '', s);
+    b.textContent = t;
+    b.addEventListener('click', () => onPick(v));
+    return b;
+  });
+}
+
+// ---------------- mesaje, dialog, cereri ----------------
+function showMsg(t) {
+  const m = $('msg');
+  m.textContent = t;
+  m.classList.add('show');
+  clearTimeout(showMsg.t);
+  showMsg.t = setTimeout(() => m.classList.remove('show'), 3500);
+}
+function online(ok) {
+  $('dot').style.background = ok ? 'var(--green)' : 'var(--red)';
+  $('netTxt').textContent = ok ? 'Live' : 'Fără legătură';
+}
+async function post(url, params) {
+  if (REMOTE) { mqSend(url, params); return; }
+  try {
+    const r = await fetch(url, { method: 'POST', body: new URLSearchParams(params) });
+    if (!r.ok) { showMsg(await r.text()); return; }
+    render(await r.json());
+    online(true);
+  } catch (e) { online(false); showMsg('Placa nu răspunde'); }
+}
+// ---------------- aplicatia de telefon: MQTT in loc de /api ----------------
+// Pagina gazduita pe HTTPS nu poate cere http://placa (browserul blocheaza), deci merge prin serverul MQTT:
+// starea vine pe <prefix>/stare (retinuta, la 15 s), comenzile pleaca pe <prefix>/cmd/<api> cu aceiasi parametri.
+// Datele serverului se scriu o data in aplicatie (Sistem) si raman doar pe telefon. "?mqtt" = proba pe http.
+const REMOTE = location.protocol === 'https:' || /[?&]mqtt\b/.test(location.search);
+const mq = { client: null, cfg: null, online: null, at: 0 };
+function mqCfg() {
+  try {
+    return Object.assign({ host: 't141a764.ala.eu-central-1.emqxsl.com', port: '8084', user: '', pass: '', prefix: 'isolar/acasa' },
+                         JSON.parse(store('casaMqtt') || '{}'));
+  }
+  catch (e) { return null; }
+}
+function mqSend(url, params) {
+  const api = url.replace(/^\/api\//, '');
+  if (api.includes('/')) { showMsg('Comanda merge doar de acasă'); return; }
+  if (!mq.client || !mq.client.connected) { showMsg('Fără legătură cu serverul'); return; }
+  mq.client.publish(mq.cfg.prefix + '/cmd/' + api, new URLSearchParams(params).toString(), { qos: 1 });
+}
+function mqStatus() {
+  const conn = mq.client && mq.client.connected, fresh = Date.now() - mq.at < 45000;   // placa trimite la 15 s
+  online(conn && mq.online !== false && fresh);
+  if (!mq.cfg || !mq.cfg.host) $('netTxt').textContent = 'Setează serverul (Sistem)';
+  else if (!conn) $('netTxt').textContent = 'Fără server';
+  else if (mq.online === false) $('netTxt').textContent = 'Placa e offline';
+  else if (!fresh) $('netTxt').textContent = 'Aștept date…';
+}
+function mqConnect() {
+  if (mq.client) { mq.client.end(true); mq.client = null; }
+  mq.cfg = mqCfg();
+  const c = mq.cfg;
+  if (!c || !c.host || !c.user || !window.mqtt) { mqStatus(); return; }
+  mq.client = mqtt.connect('wss://' + c.host + ':' + (c.port || 8084) + '/mqtt', {
+    username: c.user, password: c.pass, clientId: 'casa-' + Math.random().toString(16).slice(2, 10),
+    reconnectPeriod: 5000, connectTimeout: 10000, clean: true,
+  });
+  mq.client.on('connect', () => { mq.client.subscribe(c.prefix + '/#', { qos: 1 }); mqStatus(); });
+  mq.client.on('close', mqStatus);
+  mq.client.on('error', e => showMsg('Server MQTT: ' + e.message));
+  mq.client.on('message', (t, p) => {
+    const k = t.slice(c.prefix.length + 1), s = p.toString();
+    if (k === 'stare') { try { const d = JSON.parse(s); mq.at = Date.now(); render(d); } catch (e) { /* mesaj stricat */ } }
+    else if (k === 'online') mq.online = s === '1';
+    else if (k === 'eroare') showMsg(s);
+    mqStatus();
+  });
+}
+
+// fereastra cu un camp de text (ca alertele iOS); intoarce textul, sau null la Anuleaza
+function askText(title, hint, cur) {
+  return new Promise(res => {
+    const dlg = $('dlg');
+    if (!dlg.showModal) { const n = prompt(title, cur); res(n === null ? null : n.trim()); return; }
+    $('dlgTitle').textContent = title;
+    $('dlgHint').textContent = hint;
+    $('dlgInput').value = cur;
+    dlg.returnValue = '';
+    dlg.onclose = () => res(dlg.returnValue === 'ok' ? $('dlgInput').value.trim() : null);
+    dlg.showModal();
+    $('dlgInput').select();
+  });
+}
+async function rename(tip, i, cur) {
+  const n = await askText(tip === 'aer' ? 'Redenumește aerul' : 'Redenumește camera', 'Gol = numele inițial', cur);
+  if (n !== null && n !== cur) post('/api/nume', { tip, i, nume: n });
+}
+function fillSelect(sel, sensors, cur, withNone) {
+  const opts = (withNone ? [['-1', '— niciunul —']] : []).concat(sensors.map((s, k) =>
+    [String(k), s.nume + (s.temp === null ? '' : '  ·  ' + s.temp.toFixed(1) + '°')]));
+  const sig = opts.map(o => o.join('=')).join('|');
+  if (sel.dataset.sig !== sig) {
+    sel.textContent = '';
+    opts.forEach(([v, t]) => { const o = el('option', '', sel); o.value = v; o.textContent = t; });
+    sel.dataset.sig = sig;
+  }
+  if (document.activeElement !== sel) sel.value = String(cur);
+}
+function fillCodes(sel, codes, cur) {
+  const names = codes.map(c => c.nume);
+  const sig = names.join('\n') + '|' + cur;
+  if (sel.dataset.sig === sig) return;
+  sel.dataset.sig = sig;
+  sel.textContent = '';
+  const add = (v, t) => { const o = el('option', '', sel); o.value = v; o.textContent = t; };
+  add('', '— alege codul —');
+  names.forEach(n => add(n, n));
+  if (cur && !names.includes(cur)) add(cur, cur + ' (șters!)');
+  if (document.activeElement !== sel) sel.value = cur;
+}
+
+// ---------------- tema luminoasa / intunecata ----------------
+const themeBtns = [['light', 'Luminos', 'sun'], ['dark', 'Întunecat', 'moon']].map(([t, name, ic]) => {
+  const b = el('button', '', $('themeseg'));
+  b.appendChild(icon(ic));
+  el('span', '', b).textContent = name;
+  b.addEventListener('click', () => setTheme(t));
+  return [t, b];
+});
+function setTheme(t) {
+  if (t) { document.documentElement.dataset.theme = t; store('tema', t); }
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark'
+                                                      : matchMedia('(prefers-color-scheme: dark)').matches;
+  themeBtns.forEach(([k, b]) => b.classList.toggle('sel', (k === 'dark') === dark));
+}
+if (store('tema')) document.documentElement.dataset.theme = store('tema');
+setTheme();
+
+// ---------------- camere (pagina Clima) ----------------
+let rooms = [], sensorsData = [];
+function buildRooms(n) {
+  const g = $('rooms');
+  g.textContent = '';
+  rooms = [];
+  for (let i = 0; i < n; i++) {
+    const c = el('div', 'card room s3', g);
+    const head = el('div', 'rhead', c);
+    const name = el('button', 'rname', head);
+    name.addEventListener('click', () => rename('senzor', i, sensorsData[i].nume));
+    const fresh = el('span', 'fresh', head);
+    el('i', 'fdot', fresh);
+    const freshTxt = el('span', '', fresh);
+    const temp = el('div', 'rtemp num', c);
+    const hum = el('div', 'rhum num', c);
+    hum.appendChild(icon('drop'));
+    const humTxt = el('span', '', hum);
+    const foot = el('div', 'rfoot', c);
+    const bat = el('span', 'bat', foot);
+    const batt = el('span', 'batt', bat);
+    const battFill = el('i', '', batt);
+    const batTxt = el('span', 'num', bat);
+    const bars = el('span', 'bars', foot);
+    const barEls = [0, 1, 2, 3].map(() => el('i', '', bars));
+    rooms.push({ name, fresh, freshTxt, temp, humTxt, bat, batt, battFill, batTxt, barEls });
+  }
+}
+function signalBars(rssi) {
+  if (!rssi) return 0;
+  return rssi > -70 ? 4 : rssi > -80 ? 3 : rssi > -88 ? 2 : rssi > -96 ? 1 : 0;
+}
+function renderRooms(list) {
+  if (rooms.length !== list.length) buildRooms(list.length);
+  list.forEach((s, i) => {
+    const o = rooms[i];
+    o.name.textContent = s.nume;
+    deg(o.temp, s.temp, 1);
+    o.humTxt.textContent = s.umid === null ? '--' : Math.round(s.umid) + ' %';
+    let st = '';
+    if (s.varsta >= 0) { st = s.varsta < FRESH ? 'ok' : 'old'; o.freshTxt.textContent = ago(s.varsta); }
+    else if (s.auzit >= 0) { st = 'wait'; o.freshTxt.textContent = s.format === '-' ? 'aștept date' : s.format; }
+    else o.freshTxt.textContent = 'caut senzorul';
+    o.fresh.className = 'fresh ' + st;
+    o.bat.style.visibility = s.bat >= 0 ? '' : 'hidden';
+    if (s.bat >= 0) {
+      o.battFill.style.width = Math.max(4, Math.min(100, s.bat)) + '%';
+      o.batt.classList.toggle('low', s.bat < 20);
+      o.batTxt.textContent = s.bat + '%';
+    }
+    const n = signalBars(s.rssi);
+    o.barEls.forEach((b, k) => b.classList.toggle('on', k < n));
+  });
+}
+
+// ---------------- aere conditionate (pagina Clima) ----------------
+const MODES = [['Auto', 0], ['Răcire', 1], ['Uscare', 2], ['Ventil.', 3], ['Încălz.', 4]];
+const MODE_ICON = [['auto', 'var(--indigo)'], ['snow', 'var(--blue)'], ['drop', 'var(--teal)'], ['fan', 'var(--gray)'], ['flame', 'var(--accent)']];
+const FANS = [['Auto', 0], ['1', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5]];
+const OPTS = [['Swing', 'swing'], ['Turbo', 'turbo'], ['Silențios', 'quiet'], ['Lumină', 'lig']];
+let acs = [], acData = [];
+
+function buildAcs(n) {
+  const g = $('acs');
+  g.textContent = '';
+  acs = [];
+  if (!n) { el('div', 'card empty', g).textContent = 'Niciun aer condiționat găsit încă.'; return; }
+  for (let i = 0; i < n; i++) {
+    const c = el('div', 'card s6', g);
+    const head = el('div', 'chead', c);
+    const bdg = badge(head, 'auto', 'var(--gray)');
+    const tt = el('div', 'ctitle', head);
+    const name = el('button', 'cname', tt);
+    name.addEventListener('click', () => rename('aer', i, acData[i].nume));
+    const sub = el('div', 'csub', tt);
+    const sw = makeSwitch(head, on => send(i, 'pow', on ? 1 : 0));
+    const body = el('div', 'cbody', c);
+    const setrow = el('div', '', body);
+    const val = makeStepper(setrow, 'big', d => stepTemp(i, d));
+    const room = el('div', 'note', body);
+    el('div', 'label', body).textContent = 'Mod';
+    const modes = segment(body, MODES, v => send(i, 'mod', v));
+    el('div', 'label', body).textContent = 'Ventilator';
+    const fans = segment(body, FANS, v => send(i, 'ven', v));
+    const chips = el('div', 'chips', body);
+    const opts = OPTS.map(([t, k]) => {
+      const b = el('button', 'chip', chips);
+      b.textContent = t;
+      b.addEventListener('click', () => send(i, k, acData[i][k] === 1 ? 0 : 1));
+      return b;
+    });
+    const th = el('div', 'sub', c);
+    const thHead = el('div', 'subhead', th);
+    const tht = el('div', 'subtitle', thHead);
+    tht.textContent = 'Termostat după senzor';
+    el('small', '', tht).textContent = 'pornește și oprește aerul după camera aleasă';
+    const thSw = makeSwitch(thHead, on => thermo(i, { on: on ? 1 : 0 }));
+    const thBody = el('div', 'subbody', th);
+    const row = el('div', 'row2', thBody);
+    const sel = el('select', '', row);
+    sel.addEventListener('change', () => thermo(i, { senzor: sel.value }));
+    const tval = makeStepper(row, '', d => stepTarget(i, d * 0.5));
+    const tstate = el('div', 'state', thBody);
+    acs.push({ c, bdg, name, sub, sw, setrow, val, room, modes, fans, opts, th, thSw, sel, tval, tstate });
+  }
+}
+function send(i, o, v) { post('/api/aer', { i, o, v }); }
+function thermo(i, params) { post('/api/termostat', Object.assign({ i }, params)); }
+function stepTemp(i, d) {
+  const a = acData[i];
+  const t = Math.min(30, Math.max(16, (a.temp >= 16 ? a.temp : 24) + d));
+  if (t !== a.temp) send(i, 'temp', t);
+}
+function stepTarget(i, d) { thermo(i, { tinta: Math.min(30, Math.max(16, acData[i].termo.tinta + d)) }); }
+function acLive(a) { return a.legat && a.varsta >= 0 && a.varsta < 30; }
+
+function renderAcs(list) {
+  acData = list;
+  if (acs.length !== list.length) buildAcs(list.length);
+  list.forEach((a, i) => {
+    const o = acs[i];
+    const live = acLive(a), on = a.pornit === 1;
+    o.c.classList.toggle('na', !live);
+    o.c.classList.toggle('off', live && !on);
+    o.name.textContent = a.nume;
+    const mi = a.mod >= 0 && a.mod <= 4 ? MODE_ICON[a.mod] : ['auto', 'var(--gray)'];
+    setBadge(o.bdg, mi[0], on && live ? mi[1] : 'var(--gray)');
+    o.sub.textContent = !a.legat ? 'Conectare… · ' + a.ip : !live ? 'Nu răspunde · ' + a.ip
+      : (on ? 'Pornit · ' + (MODES[a.mod] ? MODES[a.mod][0] : '') : 'Oprit');
+    if (document.activeElement !== o.sw) o.sw.checked = on;
+    o.sw.disabled = !live;
+    deg(o.val, a.temp >= 0 ? a.temp : null);
+    o.room.textContent = a.tcam === null ? '' : 'În cameră, după aparat: ' + a.tcam + '°';
+    o.modes.forEach((b, k) => b.classList.toggle('sel', MODES[k][1] === a.mod));
+    o.fans.forEach((b, k) => b.classList.toggle('sel', FANS[k][1] === a.ven));
+    OPTS.forEach(([, k], j) => o.opts[j].classList.toggle('sel', a[k] === 1));
+    const t = a.termo;
+    o.th.classList.toggle('act', t.on);
+    o.thSw.checked = t.on;
+    o.setrow.classList.toggle('locked', t.on);
+    fillSelect(o.sel, sensorsData, t.senzor, true);
+    deg(o.tval, t.tinta, 1);
+    o.tstate.textContent = t.on ? t.stare : 'Aerul merge după senzorul lui de lângă tavan.';
+  });
+}
+$('scan').addEventListener('click', () => post('/api/aer/cauta', {}));
+
+// ---------------- boiler (pagina Apa calda) ----------------
+const bo = {};
+(function buildBoiler() {
+  const c = $('bo');
+  const head = el('div', 'chead', c);
+  bo.bdg = badge(head, 'flame', 'var(--gray)');
+  const tt = el('div', 'ctitle', head);
+  el('div', 'cname', tt).textContent = 'Boiler';
+  bo.sub = el('div', 'csub', tt);
+  bo.sw = makeSwitch(head, (on, inp) => boPower(on, inp));
+  const body = el('div', 'cbody', c);
+  const tanks = el('div', 'tanks', body);
+  bo.tanks = [1, 2].map(k => {
+    const t = el('div', 'tank', tanks);
+    const g = el('div', 'gauge', t);
+    const fill = el('i', '', g);
+    const info = el('div', '', t);
+    el('div', 'tl', info).textContent = 'Bazin ' + k;
+    const v = el('div', 'tv num', info);
+    const h = el('div', 'th', info);
+    return { t, fill, v, h };
+  });
+  el('div', 'label', body).textContent = 'Temperatura dorită';
+  bo.val = makeStepper(body, 'near', d => boStep(d));
+  bo.note = el('div', 'note', body);
+})();
+let boData = null;
+function boPower(on, inp) {
+  if (!on && !confirm('Opresc boilerul?')) { inp.checked = true; return; }
+  post('/api/boiler', { o: 'pow', v: on ? 1 : 0 });
+}
+function boStep(d) {
+  if (!boData || boData.tinta < 0) return;
+  const t = Math.min(75, Math.max(30, boData.tinta + d));
+  if (t !== boData.tinta) post('/api/boiler', { o: 'temp', v: t });
+}
+function boLive(b) { return b && b.legat && b.varsta >= 0 && b.varsta < 60; }
+function renderBoiler(b) {
+  boData = b;
+  const live = boLive(b);
+  $('bo').classList.toggle('na', !live);
+  $('bo').classList.toggle('off', live && b.pornit !== 1);
+  setBadge(bo.bdg, 'flame', live && b.incalzeste === 1 ? 'var(--accent)' : 'var(--gray)');
+  bo.sub.textContent = !b.legat ? 'Conectare…' : !live ? 'Nu răspunde' : b.pornit !== 1 ? 'Oprit'
+    : b.incalzeste === 1 ? 'Încălzește' + (b.ramas > 0 ? ' · gata în ~' + b.ramas + ' min' : '') : 'În repaus';
+  if (document.activeElement !== bo.sw) bo.sw.checked = b.pornit === 1;
+  bo.sw.disabled = !live;
+  [[b.apa, b.inc1], [b.apa2, b.inc2]].forEach(([t, h], k) => {
+    const o = bo.tanks[k];
+    o.t.style.display = k === 1 && b.apa2 < 0 ? 'none' : '';
+    deg(o.v, t >= 0 ? t : null);
+    o.fill.style.height = (t >= 0 ? Math.max(4, Math.min(100, (t - 20) / 0.6)) : 0) + '%';
+    o.t.classList.toggle('hot', h === 1);
+    o.h.textContent = h === 1 ? 'încălzește' : '';
+  });
+  deg(bo.val, b.tinta >= 0 ? b.tinta : null);
+  const info = [];
+  if (b.eroare) info.push('Eroare ' + b.eroare);
+  if (b.intrare > 0) info.push('apă rece ' + b.intrare + '°');
+  if (b.nivel >= 0 && b.nivel <= 100) info.push('apă caldă ' + b.nivel + ' %');
+  if (b.tinta > 0 && b.tinta < 50) info.push('sub 50°: o dată pe săptămână la 60°+ (Legionella)');
+  bo.note.textContent = info.join(' · ');
+}
+
+// ---------------- aeroterma automata (pagina Clima) ----------------
+const ru = {};
+let ruData = null;
+(function buildRule() {
+  const c = $('ru');
+  const head = el('div', 'chead', c);
+  ru.bdg = badge(head, 'heater', 'var(--gray)');
+  const tt = el('div', 'ctitle', head);
+  el('div', 'cname', tt).textContent = 'Aerotermă automată';
+  ru.sub = el('div', 'csub', tt);
+  ru.sw = makeSwitch(head, on => rule({ on: on ? 1 : 0 }));
+  ru.body = el('div', 'subbody', c);
+  el('div', 'label', ru.body).textContent = 'Senzorul din cameră';
+  ru.sel = el('select', '', ru.body);
+  ru.sel.addEventListener('change', () => rule({ senzor: ru.sel.value }));
+  el('div', 'label', ru.body).textContent = 'Pornește sub';
+  ru.val = makeStepper(ru.body, '', d => ruData && rule({ sub: Math.min(30, Math.max(5, ruData.sub + d * 0.5)) }));
+  ru.off = el('div', 'note', ru.body);
+  // aeroterma se comanda acum prin priza Xiaomi: codurile RF nu mai conteaza (raman ascunse)
+  el('div', 'note', ru.body).textContent = 'Comandă: priza Xiaomi a aerotermei (stare reală și consum)';
+  const codes = el('div', 'row2', ru.body);
+  codes.style.display = 'none';
+  ru.on = el('select', '', codes);
+  ru.on.addEventListener('change', () => rule({ pornire: ru.on.value }));
+  ru.offc = el('select', '', codes);
+  ru.offc.addEventListener('change', () => rule({ oprire: ru.offc.value }));
+  ru.state = el('div', 'state', ru.body);
+})();
+function rule(params) { post('/api/automat', params); }
+function renderRule(r, codes) {
+  ruData = r;
+  ru.body.style.opacity = r.on ? 1 : .55;
+  setBadge(ru.bdg, 'heater', r.on && r.pornit ? 'var(--accent)' : 'var(--gray)');
+  ru.sub.textContent = !r.on ? 'Oprită' : r.pornit ? 'Aeroterma merge' : 'Activă · în repaus';
+  ru.sw.checked = r.on;
+  fillSelect(ru.sel, sensorsData, r.senzor, false);
+  deg(ru.val, r.sub, 1);
+  ru.off.textContent = 'și se oprește la ' + (r.sub + 1).toFixed(1) + '°';
+  fillCodes(ru.on, codes, r.pornire);
+  fillCodes(ru.offc, codes, r.oprire);
+  ru.state.textContent = r.on ? r.stare : 'Alege senzorul și pragul, apoi activeaz-o.';
+}
+
+// ---------------- telecomanda BroadLink ----------------
+const tl = {};
+let telSig = '', telLearning = false, learnRf = false, telCount = 0;
+(function buildRemote() {
+  const c = $('tel');
+  const head = el('div', 'chead', c);
+  badge(head, 'remote', 'var(--indigo)');
+  const tt = el('div', 'ctitle', head);
+  el('div', 'cname', tt).textContent = 'BroadLink RM Pro+';
+  tl.sub = el('div', 'csub', tt);
+  tl.codes = el('div', 'codes', c);
+  const learn = el('div', 'learn', c);
+  tl.name = el('input', '', learn);
+  tl.name.maxLength = 23;
+  tl.name.placeholder = 'Nume cod nou, ex. TV pornit';
+  tl.kind = segment(learn, [['IR', false], ['RF', true]], v => { learnRf = v; tl.kind.forEach((b, k) => b.classList.toggle('sel', k === (v ? 1 : 0))); });
+  tl.kind[0].classList.add('sel');
+  tl.btn = el('button', 'btn', learn);
+  tl.btn.textContent = 'Învață';
+  tl.btn.addEventListener('click', startLearn);
+  tl.msg = el('div', 'state', c);
+  tl.dbg = el('div', 'dbg', c);
+})();
+function startLearn() {
+  if (telLearning) { post('/api/tel', { o: 'anuleaza' }); return; }
+  const n = tl.name.value.trim();
+  if (!n) { showMsg('Scrie întâi un nume pentru cod'); tl.name.focus(); return; }
+  post('/api/tel', { o: 'invata', nume: n, rf: learnRf ? 1 : 0 });
+  tl.name.value = '';
+}
+function renderRemote(t) {
+  telCount = t.coduri.length;
+  $('tel').classList.toggle('na', !t.legat);
+  tl.sub.textContent = !t.gasit ? 'Caut în rețea…' : !t.legat ? 'Conectare… · ' + t.ip
+    : t.coduri.length + (t.coduri.length === 1 ? ' cod salvat' : ' coduri salvate') + ' · ' + t.ip;
+  const sig = t.coduri.map(c => c.nume + c.tip).join('\n');
+  if (sig !== telSig) {
+    telSig = sig;
+    tl.codes.textContent = '';
+    if (!t.coduri.length) el('div', 'empty', tl.codes).textContent = 'Niciun cod încă. Învață primul mai jos.';
+    t.coduri.forEach((c, i) => {
+      const b = el('button', 'code', tl.codes);
+      const txt = el('div', '', b);
+      el('div', 'cn', txt).textContent = c.nume;
+      el('div', 'ct', txt).textContent = c.tip;
+      b.addEventListener('click', () => post('/api/tel', { o: 'trimite', i }));
+      const x = el('span', 'x', b);
+      x.textContent = '×';
+      x.addEventListener('click', e => {
+        e.stopPropagation();
+        if (confirm('Șterg codul „' + c.nume + '”?')) post('/api/tel', { o: 'sterge', i });
+      });
+    });
+  }
+  telLearning = t.invata === 'asteapta' || t.invata === 'rf_cauta';
+  tl.btn.textContent = telLearning ? 'Anulează' : 'Învață';
+  tl.btn.classList.toggle('gray', telLearning);
+  tl.msg.textContent =
+      t.invata === 'rf_cauta' ? 'RF, pasul 1: ține APĂSAT butonul pentru „' + t.numeInvatat + '” lângă BroadLink…'
+    : telLearning && t.rf ? 'RF, pasul 2: frecvența găsită. Ia degetul, apoi apasă butonul o dată, scurt.'
+    : telLearning ? 'Îndreaptă telecomanda spre BroadLink și apasă butonul pentru „' + t.numeInvatat + '”.'
+    : t.invata === 'gata' ? 'Cod salvat: „' + t.numeInvatat + '”. Atinge-l ca să-l încerci.'
+    : t.invata === 'expirat' ? 'N-am primit niciun cod în 30 s. Mai încearcă, mai aproape de BroadLink.'
+    : t.invata === 'eroare' ? 'Învățarea nu a pornit sau memoria e plină.'
+    : t.ultim || '';
+  tl.dbg.textContent = t.invata !== 'idle' && t.dbg ? t.dbg : '';
+}
+
+// ---------------- sistem ----------------
+const LEDS = [['Roșu', 'r', '#ff3b30'], ['Verde', 'g', '#34c759'], ['Albastru', 'b', '#007aff'], ['Alb', 'w', '#8e8e93'], ['Stins', 'off', '#8e8e93']];
+const ledBtns = LEDS.map(([t, c, col]) => {
+  const b = el('button', '', $('leds'));
+  b.textContent = t;
+  b.style.setProperty('--c', col);
+  b.addEventListener('click', () => post('/api/led', { c }));
+  return b;
+});
+function renderSystem(d) {
+  if (curPage !== 'sys') return;
+  const awake = wakeLock && !wakeLock.released ? 'activ'
+    : !('wakeLock' in navigator) ? (window.isSecureContext ? 'nesuportat de browser' : 'din setările tabletei (pagina e http)')
+    : 'inactiv (atinge ecranul)';
+  const al = d.alerta || { text: '', ce: '' };
+  const rows = [['Avertizare (LED)', al.text + (al.ce ? ': ' + al.ce : '')], ['WiFi', d.wifi + ' dBm'],
+                ['RAM liber', d.ram + ' kB (minim ' + d.ramMin + ' kB)' + (d.psram !== undefined ? ' · PSRAM ' + (d.psram / 1024).toFixed(1) + ' MB' : '')],
+                ['Pornită de', ago(d.uptime).replace('acum ', '')], ['Ecran mereu aprins', awake]];
+  if (d.mqtt) rows.push(['MQTT (din afara casei)', d.mqtt.conectat ? 'conectat · ' + d.mqtt.publicate + ' trimiteri'
+                                                    : d.mqtt.esecuri ? 'eroare ' + d.mqtt.stare + ' (' + d.mqtt.esecuri + ' încercări)' : 'oprit']);
+  const box = $('sysInfo');
+  box.textContent = '';
+  rows.forEach(([k, v]) => { const r = el('div', 'kv', box); el('span', '', r).textContent = k; el('span', 'num', r).textContent = v; });
+  ledBtns.forEach((b, k) => b.classList.toggle('sel', LEDS[k][1] === d.led));
+  renderPresence(d.prezenta);
+}
+
+// ---------------- cine e acasa: telefoanele din WiFi + ce se intampla la sosire ----------------
+const pr = (function () {
+  const c = $('pres');
+  el('div', 'cname', c).textContent = 'Cine e acasă';
+  const list = el('div', '', c);
+  const add = el('button', 'kv kvlink', c);
+  add.textContent = '+ Adaugă telefonul de pe care e deschisă pagina';
+  add.hidden = REMOTE;                               // placa trebuie sa vada telefonul in reteaua de acasa
+  add.addEventListener('click', async () => {
+    const n = await askText('Numele telefonului', 'Deschide pagina de pe telefonul respectiv (ex. Teo)', '');
+    if (n) post('/api/prezenta', { o: 'acesta', nume: n });
+  });
+  el('div', 'label', c).textContent = 'Când ajunge primul acasă';
+  const row = (txt, key) => {
+    const r = el('div', 'kv', c);
+    el('span', '', r).textContent = txt;
+    return makeSwitch(r, on => post('/api/prezenta', { o: 'setari', [key]: on ? 1 : 0 }));
+  };
+  const light = row('Aprinde lumina pe Hol (după apus)', 'lumina');
+  const clima = row('Pornește climatizarea (termostate + aerotermă)', 'clima');
+  const leave = row('Oprește climatizarea când pleacă toți', 'plecare');
+  const last = el('div', 'note', c);
+  const help = el('div', 'note', c);
+  return { list, light, clima, leave, last, help };
+})();
+function renderPresence(p) {
+  if (!p) return;
+  // placa a aprins Holul singura: lumina desenata pe Acasa devine aprinsa
+  const seen = store('holAuto');
+  if (seen !== null && +seen < p.hol) store('luminaStare:Lumina Hol', '1');
+  store('holAuto', String(p.hol));
+  if (curPage !== 'sys') return;
+  pr.list.textContent = '';
+  if (!p.telefoane.length) el('div', 'note', pr.list).textContent = 'Niciun telefon încă.';
+  p.telefoane.forEach((t, i) => {
+    const r = el('div', 'kv', pr.list);
+    el('span', '', r).textContent = (t.acasa ? '● ' : '○ ') + t.nume;
+    const v = el('span', '', r);
+    v.textContent = (t.acasa ? 'acasă' : 'plecat') + (t.vazut >= 0 ? ' · ' + ago(t.vazut) : '') + ' · ' + t.ip + '  ';
+    const x = el('button', '', v);
+    x.textContent = '✕';
+    x.addEventListener('click', () => { if (confirm('Șterg telefonul „' + t.nume + '”?')) post('/api/prezenta', { o: 'sterge', i }); });
+  });
+  pr.light.checked = p.lumina;
+  pr.clima.checked = p.clima;
+  pr.leave.checked = p.plecare;
+  pr.last.textContent = p.ultima ? 'Ultima: ' + p.ultima : '';
+  pr.help.textContent = 'Pe telefon: IP fix în router și „Adresă Wi-Fi privată” oprită sau „Fixă”. ' +
+    'Instant pe iPhone: Scurtături › Automatizare › Wi-Fi (rețeaua de acasă) › Obține conținutul URL: http://' +
+    (REMOTE ? '192.168.31.181' : location.host) + '/api/acasa?cine=<nume>&v=1';
+}
+// coordonatele orasului de la vreme ajung si la placa (pentru ora apusului)
+function sendLoc() {
+  const l = wxLoc();
+  if (l && !REMOTE) fetch('/api/prezenta', { method: 'POST', body: new URLSearchParams({ o: 'loc', lat: l.lat, lon: l.lon }) }).catch(() => {});
+}
+
+// =====================================================================================
+//            ACASA: ceas + vreme, televizor, apa calda, camere, Lumina 1 / Lumina 2
+// =====================================================================================
+let selRoom = parseInt(store('camera') || '0', 10) || 0;
+
+// aerul din camera: acelasi nume ca senzorul, altfel cel al carui termostat foloseste senzorul
+function roomAc(i) {
+  const rn = ((sensorsData[i] || {}).nume || '').trim().toLowerCase();
+  let k = acData.findIndex(a => a.nume.trim().toLowerCase() === rn);
+  if (k < 0) k = acData.findIndex(a => a.termo.on && a.termo.senzor === i);
+  return k;
+}
+
+// coduri BroadLink dupa nume (televizorul si luminile): daca lipsesc, se invata pe loc
+function codeList() { return (lastData && lastData.telecomanda && lastData.telecomanda.coduri) || []; }
+function codeIndex(name) { return codeList().findIndex(c => c.nume.trim().toLowerCase() === name.toLowerCase()); }
+function learnCode(name, rf) {
+  post('/api/tel', { o: 'invata', nume: name, rf: rf ? 1 : 0 });
+  showMsg(rf ? 'Ține APĂSAT butonul telecomenzii lângă BroadLink, până se găsește frecvența'
+             : 'Îndreaptă telecomanda spre BroadLink și apasă butonul „' + name.replace(/^TV /, '') + '”');
+}
+// Buton fara cod: alegi un cod invatat deja (primeste numele butonului) sau inveti unul nou.
+// Nu se ofera codurile altor butoane si nici cele ale aerotermei (automatizarea le cauta dupa nume).
+function pickCode(name, rf) {
+  const used = Object.values(TV_KEYS).flat().map(k => k[0]).concat(LIGHTS.map(l => l[1]), SMALL_LIGHTS.map(l => l[1]), [FAN_ON, FAN_OFF]);
+  const r = lastData && lastData.automat;
+  if (r) used.push(r.pornire, r.oprire);
+  const free = codeList().map((c, i) => [i, c]).filter(([, c]) => !used.includes(c.nume) && !c.nume.startsWith(IRAC + ' '));
+  const dlg = $('dlgPick');
+  if (!free.length || !dlg.showModal) {
+    if (confirm('Codul „' + name + '” nu e învățat încă. Îl învăț acum cu BroadLink?')) learnCode(name, rf);
+    return;
+  }
+  $('pickTitle').textContent = '„' + name.replace(/^TV /, '') + '” nu are încă un cod';
+  $('pickHint').textContent = 'Folosește un cod învățat deja (primește numele butonului) sau învață unul nou.';
+  const sel = $('pickSel');
+  sel.textContent = '';
+  const add = (v, t) => { const o = el('option', '', sel); o.value = v; o.textContent = t; };
+  add('new', 'Învață un cod nou…');
+  free.forEach(([i, c]) => add(String(i), 'Folosește „' + c.nume + '” (' + c.tip + ')'));
+  dlg.returnValue = '';
+  dlg.onclose = () => {
+    if (dlg.returnValue !== 'ok') return;
+    if (sel.value === 'new') { learnCode(name, rf); return; }
+    const c = codeList()[parseInt(sel.value, 10)];
+    post('/api/tel', { o: 'redenumeste', i: sel.value, nume: name });
+    showMsg('„' + (c ? c.nume : '') + '” e acum „' + name + '”');
+  };
+  dlg.showModal();
+}
+function sendCode(name, rf) {
+  const i = codeIndex(name);
+  if (i < 0) { pickCode(name, rf); return false; }
+  post('/api/tel', { o: 'trimite', i });
+  return true;
+}
+
+// ---------------- vremea (Open-Meteo, ceruta direct de tableta) ----------------
+const WX_TXT = { 0: 'Senin', 1: 'Mai mult senin', 2: 'Parțial noros', 3: 'Înnorat', 45: 'Ceață', 48: 'Ceață',
+  51: 'Burniță slabă', 53: 'Burniță', 55: 'Burniță deasă', 56: 'Burniță înghețată', 57: 'Burniță înghețată',
+  61: 'Ploaie slabă', 63: 'Ploaie', 65: 'Ploaie puternică', 66: 'Ploaie înghețată', 67: 'Ploaie înghețată',
+  71: 'Ninsoare slabă', 73: 'Ninsoare', 75: 'Ninsoare abundentă', 77: 'Fulgi de zăpadă',
+  80: 'Averse slabe', 81: 'Averse', 82: 'Averse puternice', 85: 'Averse de zăpadă', 86: 'Averse de zăpadă',
+  95: 'Furtună', 96: 'Furtună cu grindină', 99: 'Furtună cu grindină' };
+function wxKind(c) {
+  if (c === 0) return 'clear';
+  if (c <= 2) return 'part';
+  if (c === 45 || c === 48) return 'fog';
+  if ((c >= 71 && c <= 77) || c === 85 || c === 86) return 'snow';
+  if (c >= 95) return 'storm';
+  if (c >= 51) return 'rain';
+  return 'cloud';
+}
+// Iconite de vreme "3D": soare, nori, luna, picaturi cu degrade, lumina si umbra (ca iconitele din aplicatiile
+// de vreme). Gradientii si umbra sunt in <svg> de la inceputul paginii (x3sun, x3cl, x3drop, x3sh...).
+function sun3d(cx, cy, r) {
+  return '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 1.75).toFixed(1) + '" fill="url(#x3glow)"/>' +
+         '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="url(#x3sun)" filter="url(#x3sh)"/>';
+}
+function cloud3d(dx, dy, s, dark) {
+  const f = dark ? 'url(#x3cld)' : 'url(#x3cl)';
+  return '<g transform="translate(' + dx + ' ' + dy + ') scale(' + s + ')" filter="url(#x3sh)">' +
+    '<circle cx="30" cy="40" r="15" fill="' + f + '"/><circle cx="50" cy="31" r="20" fill="' + f + '"/>' +
+    '<circle cx="68" cy="42" r="13" fill="' + f + '"/>' +
+    '<rect x="16" y="40" width="66" height="17" rx="8.5" fill="' + (dark ? 'url(#x3cld)' : 'url(#x3clb)') + '"/></g>';
+}
+const MOON3D = '<path d="M62 54A26 26 0 1 1 42 14a20 20 0 0 0 20 40z" fill="url(#x3moon)" filter="url(#x3sh)"/>' +
+  '<circle cx="76" cy="16" r="1.8" fill="#f6dfa6"/><circle cx="84" cy="36" r="1.3" fill="#f6dfa6"/><circle cx="18" cy="20" r="1.4" fill="#f6dfa6"/>';
+function drop3d(x, y) {
+  return '<path d="M' + x + ' ' + y + 'c-3 5-4.5 7.5-4.5 9.5a4.5 4.5 0 0 0 9 0c0-2-1.5-4.5-4.5-9.5z" fill="url(#x3drop)"/>';
+}
+function wxArt(code, day) {
+  const k = wxKind(code);
+  let g = '';
+  if (k === 'clear') g = day ? sun3d(50, 40, 22) : MOON3D;
+  else {
+    if (k === 'part') g += day ? sun3d(66, 25, 17) : '<g transform="translate(30 -6) scale(.65)">' + MOON3D + '</g>';
+    if (k === 'cloud' || k === 'storm') g += cloud3d(24, -12, .72, true);      // al doilea nor, mai inchis, in spate
+    g += cloud3d(0, 0, 1, k === 'storm');
+    if (k === 'rain') g += drop3d(36, 60) + drop3d(52, 64) + drop3d(68, 60);
+    if (k === 'snow') g += '<g fill="#fff" stroke="#9cc8ea" stroke-width="1.5"><circle cx="34" cy="66" r="4"/><circle cx="51" cy="71" r="4"/><circle cx="68" cy="66" r="4"/></g>';
+    if (k === 'storm') g += '<path d="M56 50l-13 16h9l-5 12 16-19h-9l5-9z" fill="url(#x3bolt)" filter="url(#x3sh)"/>';
+    if (k === 'fog') g += '<g fill="#cfc6bd"><rect x="18" y="62" width="64" height="5" rx="2.5"/><rect x="28" y="71" width="46" height="5" rx="2.5"/></g>';
+  }
+  return '<svg viewBox="0 0 100 80">' + g + '</svg>';
+}
+let wx = null;
+try { wx = JSON.parse(store('vreme') || 'null'); } catch (e) { wx = null; }
+function wxLoc() { try { return JSON.parse(store('vremeLoc') || 'null'); } catch (e) { return null; } }
+async function loadWeather() {
+  const loc = wxLoc();
+  if (loc) {
+    try {
+      const u = 'https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lon +
+        '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation,is_day' +
+        '&hourly=temperature_2m,weather_code,precipitation_probability,is_day' +
+        '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset' +
+        '&timezone=auto&forecast_days=7';
+      const r = await fetch(u);
+      if (r.ok) { wx = await r.json(); wx.at = Date.now(); wx.loc = loc.name; store('vreme', JSON.stringify(wx)); }
+    } catch (e) { /* fara internet pe tableta: raman datele vechi */ }
+  }
+  renderClock();
+  renderWx();
+}
+async function chooseCity() {
+  const n = await askText('Orașul pentru vreme', 'ex. Cluj-Napoca, Iași, Brașov', (wxLoc() || {}).name || '');
+  if (!n) return;
+  try {
+    const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=ro&format=json&name=' + encodeURIComponent(n));
+    const g = ((await r.json()).results || [])[0];
+    if (!g) { showMsg('N-am găsit orașul „' + n + '”'); return; }
+    store('vremeLoc', JSON.stringify({ name: g.name, lat: g.latitude, lon: g.longitude }));
+    showMsg('Vremea pentru ' + g.name + (g.admin1 ? ', ' + g.admin1 : ''));
+    sendLoc();
+    loadWeather();
+  } catch (e) { showMsg('Tableta nu are internet'); }
+}
+
+// ceasul, cu vremea de afara
+$('dClock').addEventListener('click', () => go('vreme'));
+function renderClock() {
+  const now = new Date(), h = now.getHours();
+  $('greet').textContent = h < 11 ? 'Bună dimineața' : h < 18 ? 'Bună ziua' : 'Bună seara';
+  $('hDate').textContent = now.toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' });
+  $('hTime').textContent = now.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+  const cur = wx && wx.current;
+  const key = cur ? 'w' + cur.weather_code + '-' + cur.is_day : 'd' + (h >= 7 && h < 19);
+  if ($('hArt').dataset.k !== key) {
+    $('hArt').innerHTML = cur ? wxArt(cur.weather_code, cur.is_day) : wxArt(2, h >= 7 && h < 19);   // fara date: soare cu nor
+    $('hArt').dataset.k = key;
+  }
+  $('hOut').textContent = cur ? Math.round(cur.temperature_2m) + '°C' : '--';
+  $('hOutLbl').textContent = cur ? (WX_TXT[cur.weather_code] || 'afară') : wxLoc() ? 'afară' : 'atinge: alege orașul';
+  const ts = sensorsData.map(s => s.temp).filter(t => t !== null);
+  $('hAvg').textContent = ts.length ? (ts.reduce((a, b) => a + b, 0) / ts.length).toFixed(1) + '°C' : '--';
+}
+
+// ---------------- televizor (coduri IR "TV ...") ----------------
+// Pe Acasa: doar pornit / oprit, ca un televizor desenat (atingi televizorul). Telecomanda completa e pe
+// pagina TV, din meniul din stanga. Un cod lipsa apare punctat; atingi si alegi / inveti codul.
+const TV_ART = '<svg viewBox="0 0 180 128"><defs>' +
+  '<linearGradient id="tvScr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a4553"/><stop offset=".55" stop-color="#1b222b"/><stop offset="1" stop-color="#0f1318"/></linearGradient>' +
+  '<linearGradient id="tvRef" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>' +
+  '<rect x="4" y="4" width="172" height="104" rx="9" fill="#141414"/>' +
+  '<rect x="10" y="10" width="160" height="92" rx="4" fill="url(#tvScr)"/>' +
+  '<path d="M10 10h96L54 102H10z" fill="url(#tvRef)"/>' +
+  '<g class="tv-pw" stroke-width="5" stroke-linecap="round" fill="none"><path d="M90 40v18"/><path d="M76 46a20 20 0 1 0 28 0"/></g>' +
+  '<path d="M72 108h36l6 14H66z" fill="#2a2522"/><rect x="56" y="120" width="68" height="5" rx="2.5" fill="#1f1b18"/></svg>';
+const tvHome = (function () {
+  const c = $('dTv');
+  const head = el('div', 'h-head', c);
+  setIcon(el('span', 'h-icon', head), 'tv');
+  const g = el('div', 'grow', head);
+  el('div', '', g).textContent = 'Televizor';
+  const sub = el('div', 'h-sub', g);
+  const btn = el('button', 'tvart', c);
+  btn.innerHTML = TV_ART;
+  btn.setAttribute('aria-label', 'Pornește / oprește televizorul');
+  btn.addEventListener('click', () => {
+    if (!sendCode('TV Pornit', false)) return;
+    btn.classList.add('flash');
+    setTimeout(() => btn.classList.remove('flash'), 600);
+  });
+  const hint = el('div', 'lhint', c);
+  return { sub, btn, hint };
+})();
+
+// pagina TV: telecomanda completa
+const TV_KEYS = {
+  top:   [['TV Pornit', 'power', '', 'k-pow'], ['TV Sursă', 'source', 'Sursă'], ['TV Mut', 'mute', 'Mut']],
+  pad:   [['TV Sus', 'up', ''], ['TV Stânga', 'left', ''], ['TV OK', '', 'OK', 'k-ok'], ['TV Dreapta', 'right', ''], ['TV Jos', 'down', '']],
+  nav:   [['TV Înapoi', 'back', 'Înapoi'], ['TV Acasă', 'home', 'Acasă'], ['TV Meniu', 'menu', 'Meniu']],
+  vol:   [['TV Volum +', 'plus', ''], ['TV Volum -', 'minus', '']],
+  ch:    [['TV Canal +', 'up', ''], ['TV Canal -', 'down', '']],
+  apps:  [['TV Netflix', '', 'Netflix', 'k-nf'], ['TV YouTube', '', 'YouTube', 'k-yt']],
+  num:   [['TV 1', '', '1'], ['TV 2', '', '2'], ['TV 3', '', '3'], ['TV 4', '', '4'], ['TV 5', '', '5'], ['TV 6', '', '6'],
+          ['TV 7', '', '7'], ['TV 8', '', '8'], ['TV 9', '', '9'], ['TV 0', '', '0', 'k-zero']],
+};
+const tvKeyEls = [];
+function tvKey(parent, [name, ic, txt, cls]) {
+  const b = el('button', 'rk ' + (cls || ''), parent);
+  if (ic) b.appendChild(icon(ic));
+  if (txt) el('span', '', b).textContent = txt;
+  b.title = name.replace(/^TV /, '');
+  b.addEventListener('click', () => sendCode(name, false));
+  tvKeyEls.push([name, b]);
+  return b;
+}
+(function buildTvPage() {
+  const m = $('tvMain');
+  const h = el('div', 'h-head', m);
+  setIcon(el('span', 'h-icon', h), 'tv');
+  const g = el('div', 'grow', h);
+  el('div', '', g).textContent = 'Telecomandă TV';
+  el('div', 'h-sub', g).id = 'tvPageSub';
+  const row = el('div', 'rk-top', m);
+  TV_KEYS.top.forEach(k => tvKey(row, k));
+  const pad = el('div', 'dpad', m);
+  TV_KEYS.pad.forEach((k, i) => tvKey(pad, k).classList.add('p' + i));
+  const nav = el('div', 'rk-row3', m);
+  TV_KEYS.nav.forEach(k => tvKey(nav, k));
+
+  const r = $('tvRock');
+  const rocks = el('div', 'rocks', r);
+  [['Volum', TV_KEYS.vol], ['Canal', TV_KEYS.ch]].forEach(([label, keys]) => {
+    const col = el('div', 'rock', rocks);
+    tvKey(col, keys[0]);
+    el('div', 'rock-l', col).textContent = label;
+    tvKey(col, keys[1]);
+  });
+  const apps = el('div', 'rk-apps', r);
+  TV_KEYS.apps.forEach(k => tvKey(apps, k));
+
+  const n = $('tvNum');
+  el('div', 'h-head', n).textContent = 'Canale';
+  const pad2 = el('div', 'numpad', n);
+  TV_KEYS.num.forEach(k => tvKey(pad2, k));
+})();
+
+function renderTv(t) {
+  const learning = t && (t.invata === 'asteapta' || t.invata === 'rf_cauta') && /^TV /.test(t.numeInvatat);
+  const msg = learning ? 'Învăț „' + t.numeInvatat.slice(3) + '”: apasă butonul pe telecomanda TV, îndreptată spre BroadLink' : '';
+  // Acasa: doar pornit / oprit
+  const powMissing = codeIndex('TV Pornit') < 0;
+  tvHome.btn.classList.toggle('miss', powMissing);
+  tvHome.hint.textContent = powMissing ? 'Atinge televizorul ca să-i alegi codul' : 'Atinge televizorul: pornit / oprit';
+  tvHome.sub.textContent = learning ? msg : 'IR prin BroadLink · telecomanda completă în meniul TV';
+  // pagina TV
+  let missing = 0;
+  tvKeyEls.forEach(([name, b]) => { const m = codeIndex(name) < 0; b.classList.toggle('miss', m); if (m) missing++; });
+  $('tvPageSub').textContent = learning ? msg
+    : missing ? missing + ' butoane neînvățate (punctate): atinge unul ca să-l înveți' : 'Toate butoanele sunt învățate';
+}
+
+// ---------------- apa calda: bare pentru bazine si tinta ----------------
+setIcon($('wIcon'), 'flame');
+$('dWater').addEventListener('click', () => go('apa'));
+const wCols = (function () {
+  const ch = $('wChart');
+  const ax = el('div', 'axis', ch);
+  ['75', '60', '45', '30'].forEach(t => el('span', '', ax).textContent = t);
+  return ['B1', 'B2', 'Țintă'].map((name, k) => {
+    const col = el('div', 'col', ch);
+    const tr = el('div', 'track' + (k === 2 ? ' tgt' : ''), col);
+    const fill = el('i', '', tr);
+    const bub = el('div', 'bubble', tr);
+    el('div', 'lb', col).textContent = name;
+    return { fill, bub };
+  });
+})();
+function renderWater(b) {
+  const live = boLive(b);
+  const vals = live ? [b.apa, b.apa2, b.tinta] : [-1, -1, -1];
+  const heat = [b && b.inc1 === 1, b && b.inc2 === 1, false];
+  vals.forEach((t, k) => {
+    const o = wCols[k];
+    const pct = t >= 0 ? Math.max(4, Math.min(100, (t - 30) / 45 * 100)) : 0;
+    o.fill.style.height = pct + '%';
+    o.bub.style.bottom = pct + '%';
+    o.bub.style.display = live && (heat[k] || k === 2) && t >= 0 ? '' : 'none';
+    o.bub.textContent = k === 2 ? t + '°' : 'încălz.';
+  });
+  $('wBig').textContent = live && b.apa >= 0 ? b.apa : '--';
+  if (live && b.apa >= 0) el('small', '', $('wBig')).textContent = '°C';
+  $('wSub').textContent = !b ? '' : !live ? 'nu răspunde' : b.pornit !== 1 ? 'boiler oprit'
+    : b.incalzeste === 1 ? 'încălzește' : 'în repaus' + (b.nivel >= 0 && b.nivel <= 100 ? ' · ' + b.nivel + ' % apă caldă' : '');
+}
+
+// ---------------- camere: 4 dale identice, atingi una si se deschide camera ----------------
+const roomTiles = [];
+function renderRoomTiles() {
+  if (roomTiles.length !== sensorsData.length) {
+    $('roomTiles').textContent = '';
+    roomTiles.length = 0;
+    sensorsData.forEach((s, i) => {
+      const c = el('div', 'card dev rtile', $('roomTiles'));
+      c.setAttribute('role', 'button');
+      c.addEventListener('click', () => { selRoom = i; store('camera', i); go('camera'); });
+      const top = el('div', 'dtop', c);
+      const t = { ic: el('span', 'dic', top) };
+      setIcon(t.ic, 'thermo');
+      el('span', 'go', top).textContent = '›';
+      t.big = el('div', 'rbig num', c);
+      t.n = el('div', 'dn', c);
+      t.v = el('div', 'dv num', c);
+      t.s = el('div', 'ds', c);
+      roomTiles.push(t);
+    });
+  }
+  const r = lastData && lastData.automat;
+  sensorsData.forEach((s, i) => {
+    const t = roomTiles[i];
+    deg(t.big, s.temp, 1);
+    t.n.textContent = s.nume;
+    t.v.textContent = '';
+    if (s.umid !== null) { const h = el('span', 'hu', t.v); h.appendChild(icon('drop')); h.appendChild(document.createTextNode(Math.round(s.umid) + '%')); }
+    if (s.bat >= 0) el('span', 'bt', t.v).textContent = s.bat + '% bat.';
+    const k = roomAc(i), a = k >= 0 ? acData[k] : null;
+    const heater = r && r.on && r.senzor === i;
+    let on = false, st;
+    if (a && acLive(a)) {
+      on = a.pornit === 1;
+      st = on ? 'Aer pornit · ' + (a.termo.on ? a.termo.tinta.toFixed(1) : a.temp) + '°' : 'Aer oprit';
+    } else if (a) st = 'Aer: nu răspunde';
+    else if (i === iracRoom() && iracLast()) {
+      on = iracLast() !== IRAC_OFF;
+      st = 'AC: ' + iracLast().slice(IRAC.length + 1);
+    }
+    else if (i === fanRoom() && codeIndex(FAN_ON) >= 0) {
+      on = fanOn() || (heater && r.pornit);
+      st = 'Ventilator ' + (fanOn() ? 'pornit' : 'oprit') + (heater && r.pornit ? ' · aerotermă' : '');
+    }
+    else if (heater) { on = r.pornit; st = 'Aerotermă ' + (r.pornit ? 'pornită' : 'în repaus'); }
+    else st = s.varsta >= 0 ? ago(s.varsta) : 'aștept senzorul';
+    t.s.textContent = st;
+    t.ic.classList.toggle('on', on);
+  });
+}
+
+// ---------------- Lumina 1 / Lumina 2 (coduri RF): tot cardul e butonul, lampa se aprinde ----------------
+// Becurile RF nu spun daca sunt aprinse: starea afisata e dedusa din comenzile date de aici (memorata pe tableta).
+// Daca s-a desincronizat (aprinsa din alta parte), tii apasat ~1 s pe card: se corecteaza doar desenul.
+const LAMP_SVG = '<svg viewBox="0 0 160 200">' +
+  '<ellipse class="l-glow" cx="80" cy="62" rx="80" ry="64" fill="url(#lGlow)"/>' +
+  '<path class="l-cone" d="M30 80h100l30 118H0z" fill="url(#lCone)"/>' +
+  '<path d="M52 16h56l26 64H26z" fill="url(#lOff)"/>' +
+  '<path class="l-on" d="M52 16h56l26 64H26z" fill="url(#lOn)"/>' +
+  '<ellipse class="l-rim" cx="80" cy="80" rx="54" ry="5" fill="#fff1c9"/>' +
+  '<path d="M80 80v24M80 104L54 196M80 104l26 92M80 104v92" stroke="#3b2c22" stroke-width="4" stroke-linecap="round"/></svg>';
+const LIGHTS = [['light1', 'Lumina 1'], ['light2', 'Lumina 2']];
+function lightOn(name) { return store('luminaStare:' + name) === '1'; }
+const lights = LIGHTS.map(([id, name]) => {
+  const c = $(id);
+  c.setAttribute('role', 'button');
+  const head = el('div', 'h-head', c);
+  setIcon(el('span', 'h-icon', head), 'bulb');
+  const g = el('div', 'grow', head);
+  el('div', '', g).textContent = name;
+  const sub = el('div', 'h-sub', g);
+  el('div', 'lart', c).innerHTML = LAMP_SVG;
+  const hint = el('div', 'lhint', c);
+  const l = { c, name, sub, hint };
+  // atingere = comuta (trimite codul); apasare lunga = corecteaza doar starea afisata
+  let timer = 0, longPress = false;
+  c.addEventListener('pointerdown', () => {
+    longPress = false;
+    timer = setTimeout(() => {
+      longPress = true;
+      store('luminaStare:' + name, lightOn(name) ? '0' : '1');
+      showMsg(name + ': starea afișată corectată (' + (lightOn(name) ? 'aprinsă' : 'stinsă') + ')');
+      renderLights();
+    }, 800);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => c.addEventListener(ev, () => clearTimeout(timer)));
+  c.addEventListener('click', () => {
+    if (longPress) { longPress = false; return; }
+    if (!sendCode(name, true)) return;
+    store('luminaStare:' + name, lightOn(name) ? '0' : '1');
+    store('lumina:' + name, String(Date.now()));
+    c.classList.add('tap');
+    setTimeout(() => c.classList.remove('tap'), 250);
+    renderLights();
+  });
+  c.addEventListener('contextmenu', e => e.preventDefault());   // apasarea lunga nu deschide meniul browserului
+  return l;
+});
+function renderLights() {
+  lights.forEach(l => {
+    const i = codeIndex(l.name), on = i >= 0 && lightOn(l.name);
+    l.c.classList.toggle('miss', i < 0);
+    l.c.classList.toggle('on', on);
+    const last = parseInt(store('lumina:' + l.name) || '0', 10);
+    l.sub.textContent = i < 0 ? 'Cod lipsă: atinge cardul ca să-l înveți (RF)' : on ? 'Aprinsă' : 'Stinsă';
+    l.hint.textContent = i < 0 ? '' : 'Atinge pentru a ' + (on ? 'stinge' : 'aprinde') +
+      (last ? ' · ultima comandă ' + ago(Math.round((Date.now() - last) / 1000)) : '');
+  });
+}
+
+// ---------------- randul de jos: Hol, Scari, Bucatarie, Terasa (coduri RF "Lumina ...") ----------------
+// Ca Lumina 1 / 2: atingere = comuta (stare dedusa, memorata pe tableta), apasare lunga = corecteaza desenul.
+const SMALL_LIGHTS = [['Hol', 'Lumina Hol'], ['Scări', 'Lumina Scări'], ['Bucătărie', 'Lumina Bucătărie'], ['Terasă', 'Lumina Terasă']];
+const BULB_SVG = '<svg viewBox="0 0 60 80"><circle class="b-glow" cx="30" cy="28" r="30" fill="url(#lGlow)"/>' +
+  '<path class="b-glass" d="M30 6a20 20 0 0 0-12 36c3 2.5 4 5 4 8v4h16v-4c0-3 1-5.5 4-8A20 20 0 0 0 30 6z"/>' +
+  '<path d="M26 40l4-8 4 8" stroke="#c9a46a" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+  '<rect x="22" y="56" width="16" height="5" rx="2" fill="#8b7a6b"/><rect x="23" y="62" width="14" height="5" rx="2" fill="#8b7a6b"/>' +
+  '<path d="M26 70h8" stroke="#6b5a4b" stroke-width="3" stroke-linecap="round"/></svg>';
+const smallLights = SMALL_LIGHTS.map(([label, code]) => {
+  const c = el('div', 'card slight', $('lights4'));
+  c.setAttribute('role', 'button');
+  el('div', 'sbulb', c).innerHTML = BULB_SVG;
+  const t = el('div', '', c);
+  t.style.minWidth = '0';
+  el('div', 'sn', t).textContent = label;
+  const s = el('div', 'ss', t);
+  let timer = 0, longPress = false;
+  c.addEventListener('pointerdown', () => {
+    longPress = false;
+    timer = setTimeout(() => {
+      longPress = true;
+      store('luminaStare:' + code, lightOn(code) ? '0' : '1');
+      showMsg(label + ': starea afișată corectată');
+      renderSmallLights();
+    }, 800);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => c.addEventListener(ev, () => clearTimeout(timer)));
+  c.addEventListener('contextmenu', e => e.preventDefault());
+  c.addEventListener('click', () => {
+    if (longPress) { longPress = false; return; }
+    if (!sendCode(code, true)) return;
+    store('luminaStare:' + code, lightOn(code) ? '0' : '1');
+    c.classList.add('tap');
+    setTimeout(() => c.classList.remove('tap'), 200);
+    renderSmallLights();
+  });
+  return { c, code, s };
+});
+function renderSmallLights() {
+  smallLights.forEach(l => {
+    const has = codeIndex(l.code) >= 0, on = has && lightOn(l.code);
+    l.c.classList.toggle('miss', !has);
+    l.c.classList.toggle('on', on);
+    l.s.textContent = !has ? 'atinge: alege codul' : on ? 'Aprinsă' : 'Stinsă';
+  });
+}
+
+// =====================================================================================
+//                        PAGINA CAMEREI (deschisa din dalele de pe Acasa)
+// =====================================================================================
+$('roomBack').addEventListener('click', () => go('home'));
+const rs = (function () {
+  const c = $('rStat');
+  const head = el('div', 'h-head', c);
+  setIcon(el('span', 'h-icon', head), 'thermo');
+  const g = el('div', 'grow', head);
+  const name = el('button', 'cname', g);
+  name.addEventListener('click', () => rename('senzor', selRoom, sensorsData[selRoom].nume));
+  const sub = el('div', 'h-sub', g);
+  const big = el('div', 'rs-big', c);
+  const t = el('div', 'rs-t num', big);
+  const h = el('div', 'rs-h num', big);
+  const list = el('div', 'rs-list', c);
+  const row = (label) => { const r = el('div', 'rs-row', list); el('span', '', r).textContent = label; return el('span', 'num', r); };
+  return { name, sub, t, h, bat: row('Baterie senzor'), sig: row('Semnal'), last: row('Ultima citire'), fmt: row('Firmware') };
+})();
+function renderRoomStat() {
+  const s = sensorsData[selRoom];
+  if (!s) return;
+  rs.name.textContent = s.nume;
+  rs.sub.textContent = s.mac;
+  deg(rs.t, s.temp, 1);
+  rs.h.textContent = '';
+  rs.h.appendChild(icon('drop'));
+  rs.h.appendChild(document.createTextNode(s.umid === null ? '--' : Math.round(s.umid) + ' %'));
+  rs.bat.textContent = s.bat >= 0 ? s.bat + ' %' : '--';
+  rs.sig.textContent = s.rssi ? s.rssi + ' dBm' : '--';
+  rs.last.textContent = s.varsta >= 0 ? ago(s.varsta) : 'fără date';
+  rs.fmt.textContent = s.format;
+}
+
+// cadranul de temperatura pentru aerul din camera
+const TICKS = 54, ARC0 = 135, ARC = 270;                     // gradatii pe 270 de grade, ca la un termostat
+const tickEls = (function () {
+  const svg = $('tTicks'), ns = 'http://www.w3.org/2000/svg', out = [];
+  for (let k = 0; k < TICKS; k++) {
+    const a = (ARC0 + ARC * k / (TICKS - 1)) * Math.PI / 180;
+    const l = document.createElementNS(ns, 'line');
+    l.setAttribute('x1', (100 + 74 * Math.cos(a)).toFixed(1)); l.setAttribute('y1', (100 + 74 * Math.sin(a)).toFixed(1));
+    l.setAttribute('x2', (100 + 90 * Math.cos(a)).toFixed(1)); l.setAttribute('y2', (100 + 90 * Math.sin(a)).toFixed(1));
+    l.setAttribute('class', 'tk');
+    svg.appendChild(l);
+    out.push(l);
+  }
+  return out;
+})();
+setIcon($('tIcon'), 'thermo');
+$('tMinus').innerHTML = MINUS;
+$('tPlus').innerHTML = PLUS;
+$('tSwingL').prepend(icon('wind'));
+$('tAutoL').prepend(icon('auto'));
+const TMODES = [[1, 'snow', 'Răcire'], [4, 'sun', 'Încălzire'], [2, 'drop', 'Uscare'], [3, 'fan', 'Ventilație'], [0, 'auto', 'Auto']];
+const tModeBtns = TMODES.map(([v, ic, name]) => {
+  const b = el('button', '', $('tModes'));
+  b.appendChild(icon(ic));
+  b.title = name;
+  b.addEventListener('click', () => { const k = roomAc(selRoom); if (k >= 0) send(k, 'mod', v); });
+  return b;
+});
+$('tPow').addEventListener('change', () => { const k = roomAc(selRoom); if (k >= 0) send(k, 'pow', $('tPow').checked ? 1 : 0); });
+$('tSwing').addEventListener('change', () => { const k = roomAc(selRoom); if (k >= 0) send(k, 'swing', $('tSwing').checked ? 1 : 0); });
+// "Auto" = termostatul aerului dupa senzorul camerei
+$('tAuto').addEventListener('change', () => {
+  const k = roomAc(selRoom);
+  if (k >= 0) thermo(k, $('tAuto').checked ? { on: 1, senzor: selRoom } : { on: 0 });
+});
+function tStep(d) {
+  const k = roomAc(selRoom);
+  if (k < 0) return;
+  if (acData[k].termo.on) stepTarget(k, d * 0.5); else stepTemp(k, d);
+}
+$('tMinus').addEventListener('click', () => tStep(-1));
+$('tPlus').addEventListener('click', () => tStep(1));
+
+function renderTemp() {
+  const s = sensorsData[selRoom];
+  const k = roomAc(selRoom), a = k >= 0 ? acData[k] : null;
+  const live = a && acLive(a);
+  $('dTemp').style.display = a ? '' : 'none';         // camera fara aer conditionat: cardul nu apare
+  $('dTemp').classList.toggle('noac', !live);
+  $('tRoom').textContent = 'În cameră ';
+  el('b', 'num', $('tRoom')).textContent = s && s.temp !== null ? s.temp.toFixed(1) + '°C' : '--';
+  if (!a) {
+    $('tSub').textContent = 'Niciun aer condiționat în ' + (s ? s.nume : 'cameră');
+    $('tVal').textContent = '--'; $('tValLbl').textContent = '';
+    $('tPow').checked = false; $('tPow').disabled = true;
+    tickEls.forEach(t => t.classList.remove('on'));
+    return;
+  }
+  const t = a.termo, autoOn = t.on && t.senzor === selRoom;
+  $('tSub').textContent = a.nume + (!live ? ' · nu răspunde' : a.pornit === 1 ? ' · pornit' : ' · oprit');
+  $('tPow').disabled = !live;
+  if (document.activeElement !== $('tPow')) $('tPow').checked = a.pornit === 1;
+  const v = t.on ? t.tinta : a.temp;
+  $('tVal').textContent = v >= 0 ? (t.on ? v.toFixed(1) : v) + '°C' : '--';
+  $('tValLbl').textContent = t.on ? 'țintă cameră' : 'pe aparat';
+  const frac = v >= 16 ? Math.min(1, (v - 16) / 14) : 0;
+  tickEls.forEach((e2, j) => e2.classList.toggle('on', a.pornit === 1 && j / (TICKS - 1) <= frac));
+  $('tSwing').checked = a.swing === 1;
+  $('tAuto').checked = autoOn;
+  tModeBtns.forEach((b, j) => b.classList.toggle('sel', TMODES[j][0] === a.mod));
+}
+
+// ventilatorul de la semineu (coduri BroadLink "Ventilator Pornit" / "Ventilator Oprit"): in camera fara aer
+// conditionat in care e (implicit cea numita Bedroom / Dormitor). Elicele se rotesc cat e pornit.
+const FAN_ON = 'Ventilator Pornit', FAN_OFF = 'Ventilator Oprit';
+const FAN_SVG = '<svg viewBox="0 0 160 176">' +
+  '<path class="warm" d="M30 26c-10 14-10 30 0 44M18 18c-15 20-15 44 0 64M130 26c10 14 10 30 0 44M142 18c15 20 15 44 0 64" stroke="#ff9f43" stroke-width="4" stroke-linecap="round" fill="none" opacity=".9"/>' +
+  '<circle cx="80" cy="72" r="58" fill="rgba(255,255,255,.28)" stroke="#8b7a6b" stroke-width="3.5"/>' +
+  '<g class="blades" fill="url(#lOn)">' +
+  '<path d="M80 72C70 36 96 20 104 40c5 13-8 25-24 32z"/>' +
+  '<path d="M80 72C70 36 96 20 104 40c5 13-8 25-24 32z" transform="rotate(120 80 72)"/>' +
+  '<path d="M80 72C70 36 96 20 104 40c5 13-8 25-24 32z" transform="rotate(240 80 72)"/></g>' +
+  '<circle cx="80" cy="72" r="38" fill="none" stroke="#8b7a6b" stroke-opacity=".35" stroke-width="1.5"/>' +
+  '<circle cx="80" cy="72" r="11" fill="#3b2c22"/><circle cx="80" cy="72" r="4" fill="#8b7a6b"/>' +
+  '<path d="M80 130v32" stroke="#3b2c22" stroke-width="7" stroke-linecap="round"/>' +
+  '<rect x="46" y="160" width="68" height="10" rx="5" fill="#3b2c22"/></svg>';
+function fanRoom() {
+  const v = store('ventCamera');
+  if (v !== null && v !== '') return parseInt(v, 10);
+  return sensorsData.findIndex(s => /bedroom|dormitor/i.test(s.nume));
+}
+function fanOn() { return store('ventStare') === '1'; }
+// doua butoane: Pornit si Oprit (coduri separate, deci starea afisata e a ultimei comenzi trimise)
+const fan = (function () {
+  const c = $('dFan');
+  const head = el('div', 'h-head', c);
+  setIcon(el('span', 'h-icon', head), 'fan');
+  const g = el('div', 'grow', head);
+  el('div', '', g).textContent = 'Ventilator șemineu';
+  const sub = el('div', 'h-sub', g);
+  el('div', 'fart', c).innerHTML = FAN_SVG;
+  const row = el('div', 'fanbtns', c);
+  const mk = (name, label, ic, on) => {
+    const b = el('button', 'fanb ' + (on ? 'fb-on' : 'fb-off'), row);
+    b.appendChild(icon(ic));
+    el('span', '', b).textContent = label;
+    b.addEventListener('click', () => {
+      if (!sendCode(name, true)) return;
+      store('ventStare', on ? '1' : '0');
+      renderFan();
+      renderRoomTiles();
+    });
+    return b;
+  };
+  const bOn = mk(FAN_ON, 'Pornit', 'power', true);
+  const bOff = mk(FAN_OFF, 'Oprit', 'power', false);
+  return { c, sub, bOn, bOff };
+})();
+function renderFan() {
+  const show = selRoom === fanRoom() && roomAc(selRoom) < 0;
+  fan.c.style.display = show ? '' : 'none';
+  if (!show) return;
+  const hasOn = codeIndex(FAN_ON) >= 0, hasOff = codeIndex(FAN_OFF) >= 0, on = fanOn();
+  fan.bOn.classList.toggle('miss', !hasOn);
+  fan.bOff.classList.toggle('miss', !hasOff);
+  fan.bOn.classList.toggle('sel', hasOn && on);
+  fan.bOff.classList.toggle('sel', hasOff && !on);
+  fan.c.classList.toggle('on', hasOn && on);
+  fan.sub.textContent = !hasOn || !hasOff ? 'Atinge un buton punctat ca să-i alegi sau să-i înveți codul'
+    : on ? 'Pornit · aduce aer cald de la șemineu' : 'Oprit';
+}
+
+// aerul conditionat IR din Living (prin BroadLink). La aerele IR fiecare cod contine toata starea (mod,
+// temperatura, ventilator), deci nu exista "+1 grad": sunt Pornit / Oprit si comenzi salvate ("AC Living Cald 22°"),
+// invatate de pe telecomanda aerului dupa ce o setezi pe starea dorita. Starea afisata = ultima comanda trimisa.
+const IRAC = 'AC Living', IRAC_ON = IRAC + ' Pornit', IRAC_OFF = IRAC + ' Oprit';
+function iracRoom() { return sensorsData.findIndex(s => /living/i.test(s.nume)); }
+function iracLast() { return store('iracUltim') || ''; }
+const irac = (function () {
+  const c = $('dIrac');
+  const head = el('div', 'h-head', c);
+  setIcon(el('span', 'h-icon', head), 'snow');
+  const g = el('div', 'grow', head);
+  el('div', '', g).textContent = 'Aer condiționat';
+  const sub = el('div', 'h-sub', g);
+  el('div', 'irart', c).innerHTML = ART.ac;
+  const row = el('div', 'fanbtns', c);
+  const send1 = (name, b) => {
+    if (!sendCode(name, false)) return;
+    store('iracUltim', name);
+    renderIrac();
+    renderRoomTiles();
+  };
+  const bOn = el('button', 'fanb fb-on', row);
+  bOn.appendChild(icon('power')); el('span', '', bOn).textContent = 'Pornit';
+  bOn.addEventListener('click', () => send1(IRAC_ON));
+  const bOff = el('button', 'fanb fb-off', row);
+  bOff.appendChild(icon('power')); el('span', '', bOff).textContent = 'Oprit';
+  bOff.addEventListener('click', () => send1(IRAC_OFF));
+  el('div', 'label', c).textContent = 'Comenzi salvate';
+  const pre = el('div', 'irpre', c);
+  return { c, sub, bOn, bOff, pre, send1 };
+})();
+async function iracAdd() {
+  const label = await askText('Comandă nouă pentru AC', 'ex. Cald 22°, Rece 25°, Ventilație. Setează întâi telecomanda aerului.', '');
+  if (!label) return;
+  const name = IRAC + ' ' + label;
+  if (new TextEncoder().encode(name).length > 23) { showMsg('Nume prea lung: maxim ~12 caractere după „AC Living”'); return; }
+  if (codeIndex(name) >= 0) { showMsg('Comanda „' + label + '” există deja'); return; }
+  learnCode(name, false);
+}
+let iracSig = '';
+function renderIrac() {
+  const show = selRoom === iracRoom() && roomAc(selRoom) < 0;
+  irac.c.style.display = show ? '' : 'none';
+  if (!show) return;
+  const last = iracLast(), on = last && last !== IRAC_OFF;
+  irac.bOn.classList.toggle('miss', codeIndex(IRAC_ON) < 0);
+  irac.bOff.classList.toggle('miss', codeIndex(IRAC_OFF) < 0);
+  irac.bOn.classList.toggle('sel', last === IRAC_ON);
+  irac.bOff.classList.toggle('sel', last === IRAC_OFF);
+  irac.c.classList.toggle('on', !!on);
+  irac.sub.textContent = !last ? 'IR prin BroadLink' : 'Ultima comandă: ' + last.slice(IRAC.length + 1);
+  const presets = codeList().map(c => c.nume).filter(n => n.startsWith(IRAC + ' ') && n !== IRAC_ON && n !== IRAC_OFF);
+  const sig = presets.join('|') + '#' + last;
+  if (sig === iracSig) return;
+  iracSig = sig;
+  irac.pre.textContent = '';
+  presets.forEach(n => {
+    const b = el('button', 'chip' + (n === last ? ' sel' : ''), irac.pre);
+    b.textContent = n.slice(IRAC.length + 1);
+    b.addEventListener('click', () => irac.send1(n));
+  });
+  const add = el('button', 'chip add', irac.pre);
+  add.textContent = '+ Comandă nouă';
+  add.addEventListener('click', iracAdd);
+}
+
+// aeroterma: doar in camera senzorului ei
+setIcon($('aIcon'), 'heater');
+$('aArt').innerHTML = ART.heater;
+// priza Xiaomi a aerotermei: starea reala si consumul (citite de placa la 5 s), comutator
+const plug = (function () {
+  const row = $('aPlug');
+  setIcon(el('span', 'pi', row), 'power');
+  const t = el('div', 'pt', row);
+  el('b', '', t).textContent = 'Priză aerotermă';
+  const st = el('span', '', t);
+  const w = el('div', 'pw', row);
+  const sw = makeSwitch(row, on => post('/api/priza', { v: on ? 1 : 0 }));
+  return { row, st, w, sw };
+})();
+function renderPlug(p) {
+  if (!p) return;
+  const live = p.legat && p.varsta >= 0 && p.varsta < 30;
+  plug.row.classList.toggle('on', live && p.pornita === 1);
+  plug.st.textContent = !p.legat ? 'caut priza…' : !live ? 'nu răspunde' : p.pornita === 1 ? 'pornită' : 'oprită';
+  plug.w.textContent = live && p.w >= 0 ? p.w + ' W' : '';
+  if (document.activeElement !== plug.sw) plug.sw.checked = p.pornita === 1;
+  plug.sw.disabled = !live;
+}
+
+// pragul de pornire: - / + din 0,5 in 0,5 grade (5..30)
+el('div', 'label', $('aChips')).textContent = 'Pornește sub';
+const aVal = makeStepper($('aChips'), 'near', d => {
+  const r = lastData && lastData.automat;
+  if (r) rule({ sub: Math.min(30, Math.max(5, r.sub + d * 0.5)) });
+});
+$('aOn').addEventListener('change', () => rule({ on: $('aOn').checked ? 1 : 0 }));
+function arcPt(f) {                                   // punct pe arcul de 180 grade (stanga = 10, dreapta = 30)
+  const a = Math.PI * (1 - Math.max(0, Math.min(1, f)));
+  return [110 + 90 * Math.cos(a), 110 - 90 * Math.sin(a)];
+}
+function renderHeat(r) {
+  $('dHeat').style.display = r && r.senzor === selRoom ? '' : 'none';
+  if (!r || r.senzor !== selRoom) return;
+  const s = sensorsData[r.senzor];
+  $('aOn').checked = r.on;
+  $('aSub').textContent = !r.on ? 'automatizare oprită' : (r.pornit ? 'merge' : 'în repaus');
+  deg(aVal, r.sub, 1);
+  const t = s && s.temp !== null ? s.temp : null;
+  $('aNow').textContent = '';
+  el('b', 'num', $('aNow')).textContent = t === null ? '--' : t.toFixed(1) + '°';
+  $('aNow').appendChild(document.createTextNode('  în cameră · se oprește la ' + (r.sub + 1).toFixed(1) + '°'));
+  const [x, y] = arcPt(t === null ? 0 : (t - 10) / 20);
+  $('aArcV').setAttribute('d', 'M20 110 A90 90 0 0 1 ' + x.toFixed(1) + ' ' + y.toFixed(1));
+  $('aKnob').setAttribute('cx', x.toFixed(1)); $('aKnob').setAttribute('cy', y.toFixed(1));
+  const ma = Math.PI * (1 - Math.max(0, Math.min(1, (r.sub - 10) / 20)));
+  $('aMark').setAttribute('x1', (110 + 74 * Math.cos(ma)).toFixed(1)); $('aMark').setAttribute('y1', (110 - 74 * Math.sin(ma)).toFixed(1));
+  $('aMark').setAttribute('x2', (110 + 106 * Math.cos(ma)).toFixed(1)); $('aMark').setAttribute('y2', (110 - 106 * Math.sin(ma)).toFixed(1));
+  $('dHeat').style.opacity = r.on ? 1 : .75;
+}
+
+// =====================================================================================
+//                     PAGINA VREMEA: acum, pe ore (24 h), pe 7 zile
+// =====================================================================================
+$('wxBack').addEventListener('click', () => go('home'));
+$('wxCity').addEventListener('click', chooseCity);
+function hm(iso) { return iso ? iso.slice(11, 16) : '--'; }
+function renderWx() {
+  if (curPage !== 'vreme') return;
+  const now = $('wxNow'), det = $('wxDet'), hours = $('wxHours'), days = $('wxDays');
+  [now, det, hours, days].forEach(e => e.textContent = '');
+  const loc = wxLoc();
+  if (!loc || !wx || !wx.current) {
+    el('div', 'h-head', now).textContent = loc ? 'Se încarcă vremea…' : 'Alege orașul';
+    el('div', 'h-sub', now).textContent = loc ? 'Tableta cere datele de la Open-Meteo (are nevoie de internet).'
+                                               : 'Vremea vine de la Open-Meteo, gratuit, fără cont.';
+    if (!loc) { const b = el('button', 'btn', now); b.textContent = 'Alege orașul'; b.style.marginTop = '14px'; b.addEventListener('click', chooseCity); }
+    [det, hours, days].forEach(e => e.style.display = 'none');
+    return;
+  }
+  [det, hours, days].forEach(e => e.style.display = '');
+  const c = wx.current, d = wx.daily;
+  // acum
+  const wn = el('div', 'wn', now);
+  el('div', 'wn-art', wn).innerHTML = wxArt(c.weather_code, c.is_day);
+  const wt = el('div', '', wn);
+  el('div', 'wn-t num', wt).textContent = Math.round(c.temperature_2m) + '°';
+  el('div', 'wn-d', wt).textContent = WX_TXT[c.weather_code] || '';
+  el('div', 'wn-s', wt).textContent = 'Se simte ca ' + Math.round(c.apparent_temperature) + '° · max ' +
+    Math.round(d.temperature_2m_max[0]) + '° min ' + Math.round(d.temperature_2m_min[0]) + '°';
+  el('div', 'wn-s', wt).textContent = (wx.loc || loc.name) + ' · actualizat ' + ago(Math.round((Date.now() - wx.at) / 1000));
+  // detalii
+  const grid = el('div', 'wdet', det);
+  [['drop', 'Umiditate', Math.round(c.relative_humidity_2m) + ' %'], ['wind', 'Vânt', Math.round(c.wind_speed_10m) + ' km/h'],
+   ['umbrella', 'Precipitații', c.precipitation + ' mm'], ['sunrise', 'Răsărit', hm(d.sunrise[0])],
+   ['sunset', 'Apus', hm(d.sunset[0])], ['thermo', 'Ploaie azi', (d.precipitation_probability_max[0] || 0) + ' %']]
+    .forEach(([ic, l, v]) => {
+      const t = el('div', 'wtile', grid);
+      const wl = el('div', 'wl', t); wl.appendChild(icon(ic)); wl.appendChild(document.createTextNode(l));
+      el('div', 'wv num', t).textContent = v;
+    });
+  // pe ore
+  el('div', 'h-head', hours).textContent = 'Următoarele 24 de ore';
+  const strip = el('div', 'whours', hours);
+  const hh = wx.hourly;
+  let i0 = hh.time.findIndex(t => t.slice(0, 13) === c.time.slice(0, 13));
+  if (i0 < 0) i0 = 0;
+  for (let k = i0; k < Math.min(hh.time.length, i0 + 25); k++) {
+    const col = el('div', 'wh' + (k === i0 ? ' now' : ''), strip);
+    el('div', '', col).textContent = k === i0 ? 'Acum' : hh.time[k].slice(11, 13);
+    el('div', 'wa', col).innerHTML = wxArt(hh.weather_code[k], hh.is_day[k]);
+    el('div', 'wt num', col).textContent = Math.round(hh.temperature_2m[k]) + '°';
+    el('div', 'wp num', col).textContent = hh.precipitation_probability[k] >= 20 ? hh.precipitation_probability[k] + '%' : '';
+  }
+  // pe 7 zile, cu bara min-max pe scara saptamanii (ca in aplicatia Vreme de pe iPhone)
+  el('div', 'h-head', days).textContent = 'Următoarele 7 zile';
+  const gmin = Math.min(...d.temperature_2m_min), gmax = Math.max(...d.temperature_2m_max), span = Math.max(1, gmax - gmin);
+  d.time.forEach((t, k) => {
+    const r = el('div', 'wday', days);
+    const date = new Date(t + 'T12:00');
+    el('div', 'wdn', r).textContent = k === 0 ? 'Azi' : k === 1 ? 'Mâine' : date.toLocaleDateString('ro-RO', { weekday: 'short' }).replace('.', '');
+    el('div', 'wa', r).innerHTML = wxArt(d.weather_code[k], 1);
+    el('div', 'wp num', r).textContent = d.precipitation_probability_max[k] >= 20 ? d.precipitation_probability_max[k] + '%' : '';
+    el('div', 'lo num', r).textContent = Math.round(d.temperature_2m_min[k]) + '°';
+    const bar = el('div', 'wbar', r), fill = el('i', '', bar);
+    fill.style.left = ((d.temperature_2m_min[k] - gmin) / span * 100).toFixed(1) + '%';
+    fill.style.width = Math.max(4, (d.temperature_2m_max[k] - d.temperature_2m_min[k]) / span * 100).toFixed(1) + '%';
+    el('div', 'hi num', r).textContent = Math.round(d.temperature_2m_max[k]) + '°';
+  });
+}
+
+// Pagina Acasa pe tableta (>= 900 px): fara derulare. Dashboard-ul se micsoreaza (CSS zoom) exact cat
+// sa incapa pe ecran. Pe telefon cardurile stau unele sub altele: derulare normala.
+const wideMq = matchMedia('(min-width: 900px)');
+function fitHome() {
+  const dash = $('homeDash');
+  const lock = curPage === 'home' && wideMq.matches;
+  document.documentElement.classList.toggle('lock', lock);
+  if (!lock) { dash.style.zoom = ''; return; }
+  // Se recalculeaza la fiecare actualizare, pornind de la zoom-ul curent (fara sa-l reseteze: ecranul nu clipeste).
+  const z0 = parseFloat(dash.style.zoom) || 1;
+  const r = dash.getBoundingClientRect();
+  const avail = window.innerHeight - 24 - r.top;
+  if (avail < 200) return;
+  const z = Math.max(0.6, Math.min(1, avail / (r.height / z0)));   // sub 60% textul nu se mai citeste
+  if (Math.abs(z - z0) > 0.004) dash.style.zoom = z >= 0.999 ? '' : z.toFixed(3);
+}
+window.addEventListener('resize', fitHome);
+
+let lastData = null;
+function renderHome() {
+  if (!lastData) return;
+  if (selRoom >= sensorsData.length) selRoom = 0;
+  renderClock();
+  renderTv(lastData.telecomanda);
+  renderWater(lastData.boiler);
+  renderRoomTiles();
+  renderLights();
+  renderSmallLights();
+  renderRoomStat();
+  renderTemp();
+  renderFan();
+  renderIrac();
+  renderHeat(lastData.automat);
+  renderPlug(lastData.priza);
+  if (curPage === 'camera' && sensorsData[selRoom]) $('title').textContent = sensorsData[selRoom].nume;
+  if (curPage === 'home') fitHome();
+}
+
+// ---------------- pagini si navigare ----------------
+// in bara de navigare; "camera" si "vremea" se deschid din Acasa
+const PAGES = [['home', 'Acasă', 'home'], ['tv', 'TV', 'tv'], ['apa', 'Apă caldă', 'flame'],
+               ['tel', 'Telecomandă', 'remote'], ['sys', 'Sistem', 'gear']];
+// nu sunt in meniu: camera si vremea se deschid din Acasa, climatizarea din Sistem
+const SUBPAGES = [['camera', 'Cameră'], ['vreme', 'Vremea'], ['clima', 'Climatizare']];
+$('toClima').addEventListener('click', () => go('clima'));
+let curPage = 'home';
+const tabs = PAGES.map(([id, name, ic]) => {
+  const b = el('button', '', $('rail'));
+  b.appendChild(icon(ic));
+  el('span', '', b).textContent = name === 'Climatizare' ? 'Climă' : name;
+  b.title = name;
+  b.addEventListener('click', () => go(id));
+  return b;
+});
+function go(id) {
+  const all = PAGES.concat(SUBPAGES);
+  if (!all.some(p => p[0] === id)) id = 'home';
+  curPage = id;
+  all.forEach(([p, name]) => {
+    $('pg-' + p).hidden = p !== id;
+    if (p === id) $('title').textContent = name;
+  });
+  PAGES.forEach(([p], k) => tabs[k].classList.toggle('sel', p === id || (p === 'home' && (id === 'camera' || id === 'vreme'))
+                                                          || (p === 'sys' && id === 'clima')));
+  store('pagina', id);
+  if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+  window.scrollTo(0, 0);
+  if (lastData) { renderSystem(lastData); renderHome(); }
+  if (id === 'vreme') { renderWx(); if (!wx || Date.now() - (wx.at || 0) > 10 * 60 * 1000) loadWeather(); }
+  fitHome();
+}
+
+// ---------------- totul ----------------
+function render(d) {
+  lastData = d;
+  sensorsData = d.senzori || sensorsData;
+  renderRooms(sensorsData);
+  if (d.aer) renderAcs(d.aer);
+  if (d.boiler) renderBoiler(d.boiler);
+  if (d.automat && d.telecomanda) renderRule(d.automat, d.telecomanda.coduri);
+  if (d.telecomanda) renderRemote(d.telecomanda);
+  renderSystem(d);
+  renderHome();
+}
+async function poll() {
+  if (REMOTE) { mqStatus(); return; }               // starea vine singura prin MQTT
+  try {
+    const r = await fetch('/api/senzori', { cache: 'no-store' });
+    render(await r.json());
+    online(true);
+  } catch (e) { online(false); }
+}
+
+// Ecranul tabletei nu intra in standby cat pagina e deschisa (Wake Lock). Browserele il permit doar pe HTTPS,
+// deci pe http://<placa> de obicei nu e disponibil: pe iPad se rezolva din setari (Blocare automata: Niciodata,
+// sau Acces ghidat). Pe Chrome/Android merge daca adresa e trecuta in chrome://flags la
+// "Insecure origins treated as secure". Se cere din nou cand pagina revine in fata.
+let wakeLock = null;
+async function keepAwake() {
+  if (REMOTE || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;   // telefonul se stinge normal
+  if (wakeLock && !wakeLock.released) return;
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
+}
+document.addEventListener('visibilitychange', keepAwake);
+document.addEventListener('pointerdown', keepAwake);   // unele browsere il dau doar dupa o atingere
+keepAwake();
+
+// aplicatia de telefon: datele serverului MQTT (pe pagina Sistem), biblioteca MQTT si lucrul fara semnal
+if (REMOTE) {
+  const c = el('div', 'card mqform', $('pg-sys').querySelector('section'));
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon)';
+  el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
+  const f = {};
+  [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
+   ['user', 'Utilizator', ''], ['pass', 'Parolă', ''], ['prefix', 'Prefix subiecte', 'isolar/acasa']].forEach(([k, label, ph]) => {
+    el('div', 'label', c).textContent = label;
+    const i = el('input', '', c);
+    i.placeholder = ph;
+    i.autocomplete = 'off';
+    i.autocapitalize = 'off';
+    if (k === 'pass') i.type = 'password';
+    if (k === 'port') i.inputMode = 'numeric';
+    f[k] = i;
+  });
+  const cur = mqCfg() || {};
+  Object.keys(f).forEach(k => f[k].value = cur[k] || '');
+  const save = el('button', 'kv kvlink', c);
+  save.textContent = 'Salvează și conectează';
+  save.addEventListener('click', () => {
+    const v = {};
+    Object.keys(f).forEach(k => v[k] = f[k].value.trim());
+    if (!v.prefix) v.prefix = 'isolar/acasa';
+    store('casaMqtt', JSON.stringify(v));
+    showMsg('Mă conectez la ' + v.host);
+    mqConnect();
+  });
+  const s = document.createElement('script');
+  s.src = 'https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';
+  s.onload = mqConnect;
+  s.onerror = () => showMsg('Nu pot încărca biblioteca MQTT (fără internet?)');
+  document.head.appendChild(s);
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  if (!(mqCfg() || {}).user) setTimeout(() => go('sys'), 0);
+}
+
+go(location.hash.slice(1) || store('pagina') || 'home');
+window.addEventListener('hashchange', () => go(location.hash.slice(1)));
+setInterval(() => { if (lastData) renderClock(); }, 15000);
+poll();
+setInterval(poll, 3000);
+loadWeather();
+sendLoc();
+setInterval(loadWeather, 15 * 60 * 1000);           // vremea: la 15 minute
+</script>
+</body>
+</html>
