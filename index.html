@@ -83,7 +83,8 @@
   .themeseg button.sel { background: var(--glass2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
   .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; background: var(--fill); font-size: 14px; color: var(--text2); white-space: nowrap; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); }
-  @media (max-width: 560px) { .themeseg button span { display: none; } .pill span:last-child { display: none; } .hello b { font-size: 18px; } }
+  @media (max-width: 560px) { .themeseg button span { display: none; } .pill span:last-child { display: none; } .hello b { font-size: 18px; }
+                              .remote .pill span:last-child { display: inline; } .remote .pill { padding: 8px 10px; font-size: 12px; } }
 
   /* navigare: verticala la stanga pe tableta, jos pe telefon */
   .rail {
@@ -2285,8 +2286,11 @@ keepAwake();
 
 // aplicatia de telefon: datele serverului MQTT (pe pagina Sistem), biblioteca MQTT si lucrul fara semnal
 if (REMOTE) {
-  const c = el('div', 'card mqform', $('pg-sys').querySelector('section'));
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v4';
+  document.body.classList.add('remote');           // pe telefon: starea legaturii ramane scrisa langa punct
+  const sec = $('pg-sys').querySelector('section');
+  const c = el('div', 'card mqform');
+  sec.insertBefore(c, sec.firstChild);             // primul card pe Sistem
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v5';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
