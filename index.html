@@ -681,7 +681,7 @@
         <div class="t-toggles">
           <div class="t-tg"><span class="tl" id="tSwingL">Swing</span><label class="switch"><input type="checkbox" id="tSwing"><span></span></label></div>
           <div class="t-div"></div>
-          <div class="t-tg"><span class="tl" id="tAutoL">Auto</span><label class="switch"><input type="checkbox" id="tAuto"><span></span></label></div>
+          <div class="t-tg"><span class="tl" id="tAutoL">După termometru</span><label class="switch"><input type="checkbox" id="tAuto"><span></span></label></div>
         </div>
         <div class="modes" id="tModes"></div>
       </div>
@@ -2237,6 +2237,8 @@ function renderTemp() {
   const v = t.on ? t.tinta : a.temp;
   $('tVal').textContent = v >= 0 ? (t.on ? v.toFixed(1) : v) + '°C' : '--';
   $('tValLbl').textContent = t.on ? 'țintă cameră' : 'pe aparat';
+  // cu termostatul pornit, aerul primeste tinta +/- 2 grade (senzorul lui e sus): se vede ca sa nu para o greseala
+  if (t.on && a.temp >= 16) $('tRoom').appendChild(document.createTextNode(' · pe aparat ' + a.temp + '°'));
   const frac = v >= 16 ? Math.min(1, (v - 16) / 14) : 0;
   tickEls.forEach((e2, j) => e2.classList.toggle('on', a.pornit === 1 && j / (TICKS - 1) <= frac));
   $('tSwing').checked = a.swing === 1;
@@ -2623,7 +2625,7 @@ if (REMOTE) {
   const sec = $('pg-sys').querySelector('section');
   const c = el('div', 'card mqform');
   sec.insertBefore(c, sec.firstChild);             // primul card pe Sistem
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v13';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v14';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
