@@ -1613,6 +1613,8 @@ function renderInvPage(iv) {
      ['Luat din rețea', n1(d.tIn, 2) + ' kWh'], ['Total panouri', n1(d.ePv, 1) + ' kWh']]);
   kvRows(ip.state, [['Mod', d.modeText || '--'], ['Stare', d.status || '--'], ['Temperatură', n1(d.temp) + ' °C'],
                     ['SOC calculat / invertor', n1(d.soc) + '% / ' + n1(d.socInv) + '%'],
+                    ['Baterie, curent, panouri', d.src === 'masurat' ? 'sistemul propriu de măsură' : 'invertorul (măsura proprie lipsește)'],
+                    ['Tensiune baterie după invertor', n1(d.batVInv, 2) + ' V'],
                     ['Tensiune bus', n1(d.bus) + ' V'], ['WiFi placă invertor', n1(d.rssi) + ' dBm']]);
   ip.sets.textContent = '';
   if (!s) { el('div', 'note', ip.sets).textContent = 'Setările încă n-au fost citite de placa invertorului.'; return; }
@@ -2700,7 +2702,7 @@ if (REMOTE) {
   const sec = $('pg-sys').querySelector('section');
   const c = el('div', 'card mqform');
   sec.insertBefore(c, sec.firstChild);             // primul card pe Sistem
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v19';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v20';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
