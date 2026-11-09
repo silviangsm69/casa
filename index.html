@@ -261,8 +261,9 @@
   /* televizor pe Acasa: doar pornit / oprit */
   .d-tv { display: flex; flex-direction: column; }
   /* televizorul desenat e butonul de pornit / oprit */
-  .tvart { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0 4px; min-height: 0; border-radius: 18px; }
-  .tvart svg { width: 100%; max-width: 175px; display: block; filter: drop-shadow(0 12px 16px rgba(40,20,5,.28)); transition: transform .15s; }
+  .tvwrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0 4px; min-height: 0; }
+  .tvart { display: block; padding: 0; line-height: 0; border-radius: 12px; }
+  .tvart svg { width: 150px; max-width: 100%; display: block; filter: drop-shadow(0 12px 16px rgba(40,20,5,.28)); transition: transform .15s; }
   .tvart:active svg { transform: scale(.95); }
   .tvart .tv-pw { stroke: #ff6b4a; transition: stroke .2s; }
   .tvart.flash .tv-pw { stroke: #fff; }
@@ -321,6 +322,8 @@
   .d-inv .iv-row { grid-template-columns: 1fr; gap: 6px; }
   .d-inv .iv-row div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 6px; padding: 7px 10px; }
   .d-inv .iv-row .iv-bat { flex-basis: 100%; }
+  .iv-pw { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .pos { color: var(--green); } .neg { color: var(--red); }
 
   /* Lumina Living: 6 butoane 2 x 3 care umplu cardul */
   .d-living { display: flex !important; flex-direction: column; gap: 14px; }
@@ -408,6 +411,11 @@
   .plugrow .pt b { display: block; font-size: 15px; }
   .plugrow .pt span { font-size: 13px; color: var(--text2); }
   .plugrow .pw { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .plugrow + .plugrow { margin-top: 8px; }
+  /* aeroterma: ce face acum (dupa consumul prizei) */
+  .heat-msg { margin-top: 12px; padding: 10px 12px; border-radius: 14px; font-size: 14px; font-weight: 600; background: var(--fill); color: var(--text2); }
+  .heat-msg.hot { background: linear-gradient(150deg, rgba(255,170,80,.35), var(--fill)); color: var(--text); }
+  .heat-msg.warn { background: rgba(229,72,77,.12); color: var(--red); }
   /* aerul conditionat IR din Living: Pornit / Oprit + comenzi salvate (fiecare = un cod IR cu toata starea) */
   .irart { display: flex; justify-content: center; padding: 18px 0 14px; }
   .irart svg { width: 82%; max-width: 280px; display: block; filter: drop-shadow(0 10px 14px rgba(80,50,20,.18)); }
@@ -707,9 +715,10 @@
       <div class="card d-heat" id="dHeat">
         <div class="h-head"><span class="h-icon" id="aIcon"></span>
           <div class="grow"><div>Aerotermă</div><div class="h-sub" id="aSub"></div></div>
-          <label class="switch"><input type="checkbox" id="aOn"><span></span></label>
         </div>
+        <div class="heat-msg" id="aMsg"></div>
         <div class="plugrow" id="aPlug"></div>
+        <div class="plugrow" id="aAuto"></div>
         <div id="aChips"></div>
         <div class="heat-body">
           <div class="arcbox">
@@ -1540,11 +1549,19 @@ const ic = (function () {
   el('span', '', big).textContent = 'din panouri';
   const row = el('div', 'iv-row', c);
   const box = label => { const d = el('div', '', row); const b = el('b', 'num', d); const s = el('small', '', d); s.textContent = label; return { d, b, s }; };
-  const bat = box('baterie'), load = box('consum casă'), grid = box('rețea');
+  const bat = box('baterie'), load = box('consum casă');
+  const batW = el('span', 'iv-pw num');               // puterea bateriei: + verde la incarcare, - rosu la descarcare
+  bat.d.insertBefore(batW, bat.s);
   const bar = el('i', '', el('div', 'iv-bat', bat.d));
   c.addEventListener('click', () => go('invertor'));
-  return { c, sub, pv, bat, bar, load, grid };
+  return { c, sub, pv, bat, batW, bar, load };
 })();
+// putere / curent cu semn: + verde (incarca), - rosu (descarca), aproape de 0 fara culoare
+function signed(elm, v, txt, dead) {
+  elm.textContent = v === null || v === undefined || isNaN(v) ? '--' : (v > dead ? '+' : v < -dead ? '−' : '') + txt(Math.abs(v));
+  elm.classList.toggle('pos', v > dead);
+  elm.classList.toggle('neg', v < -dead);
+}
 function renderInvCard(iv) {
   const live = invLive(iv), d = (iv && iv.stare) || {};
   ic.c.classList.toggle('off', !live);
@@ -1552,10 +1569,9 @@ function renderInvCard(iv) {
     : iv.online === 0 ? 'placa invertorului e offline' : !live ? 'invertorul nu răspunde' : d.modeText || '';
   ic.pv.textContent = live ? fmtW(d.pvW) : '--';
   ic.bat.b.textContent = live ? Math.round(d.soc) + '%' : '--';
-  ic.bat.s.textContent = !live ? 'baterie' : d.batW > 20 ? 'se încarcă' : d.batW < -20 ? 'se descarcă' : 'baterie';
+  signed(ic.batW, live ? d.batW : null, fmtW, 20);
   ic.bar.style.width = (live ? Math.max(0, Math.min(100, d.soc)) : 0) + '%';
   ic.load.b.textContent = live ? fmtW(d.outW) : '--';
-  ic.grid.b.textContent = !live ? '--' : d.gridV > 50 ? fmtW(d.gridW) : 'fără';
 }
 
 $('invBack').addEventListener('click', () => go('home'));
@@ -1604,17 +1620,13 @@ function renderInvPage(iv) {
                      ['Tensiune de gol (învățată)', d.voc > 0 ? n1(d.voc) + ' V' : 'încă nu'],
                      ]);
   T.bat.b.textContent = live ? Math.round(d.soc) + '%' : '--';
-  // curentii: masurati de ESP-ul propriu (direct din Blynk, prin placa casei) si cei raportati de invertor
-  const m = (lastData && lastData.masurat) || {}, mi = m.ok ? m.i : null;
+  // Baterie: doar procentul si masura proprie (ESP, direct din Blynk prin placa casei); curentul fara decalajul
+  // de zero invatat, cu + verde la incarcare si - rosu la descarcare. Restul valorilor sunt in Stare.
+  const m = (lastData && lastData.masurat) || {}, mi = m.ok ? m.i - (d.offI || 0) : null;
   const amp = v => v === null || v === undefined || isNaN(v) ? '--' : Number(v).toFixed(1) + ' A';
-  kvRows(T.bat.list, [['Putere', (d.batW > 0 ? '+' : '') + fmtW(d.batW)], ['Tensiune', n1(d.batV, 2) + ' V'],
-                      ['Stocat', n1(d.kwh, 2) + ' kWh · ' + n1(d.ah) + ' Ah'],
-                      ['Încărcare · ESP', amp(mi === null ? null : Math.max(0, mi))],
-                      ['Descărcare · ESP', amp(mi === null ? null : Math.max(0, -mi))],
-                      ['Încărcare · invertor', amp(d.chgInv)],
-                      ['Descărcare · invertor', amp(d.disInv)],
-                      ['Bilanț (panouri − casă)', d.balI === undefined ? 'doar pe baterie' : (d.balI > 0 ? '+' : '') + amp(d.balI)],
-                      ['Corecție zero ESP (învățată)', d.offI === undefined ? '--' : (d.offI > 0 ? '−' : '+') + Math.abs(d.offI).toFixed(2) + ' A']]);
+  kvRows(T.bat.list, [['Tensiune (ESP)', m.ok ? n1(m.v, 2) + ' V' : '--'], ['Curent (ESP)', ''],
+                      ['Stocat', n1(d.kwh, 2) + ' kWh · ' + n1(d.ah) + ' Ah']]);
+  signed(T.bat.list.children[1].lastChild, mi, a => a.toFixed(1) + ' A', 0.2);
   T.load.b.textContent = live ? fmtW(d.outW) : '--';
   kvRows(T.load.list, [['Sarcină', n1(d.load) + '% · ' + n1(d.outVA) + ' VA'], ['Ieșire', n1(d.outV, 1) + ' V · ' + n1(d.outHz, 1) + ' Hz']]);
   T.grid.b.textContent = !live ? '--' : d.gridV > 50 ? fmtW(d.gridW) : 'fără rețea';
@@ -1625,7 +1637,11 @@ function renderInvPage(iv) {
   kvRows(ip.state, [['Mod', d.modeText || '--'], ['Stare', d.status || '--'], ['Temperatură', n1(d.temp) + ' °C'],
                     ['SOC calculat / invertor', n1(d.soc) + '% / ' + n1(d.socInv) + '%'],
                     ['Baterie, curent, panouri', d.src === 'masurat' ? 'sistemul propriu de măsură' : 'invertorul (măsura proprie lipsește)'],
+                    ['Putere baterie', (d.batW > 0 ? '+' : '') + fmtW(d.batW)],
                     ['Tensiune baterie după invertor', n1(d.batVInv, 2) + ' V'],
+                    ['Încărcare / descărcare · invertor', amp(d.chgInv) + ' / ' + amp(d.disInv)],
+                    ['Bilanț (panouri − casă)', d.balI === undefined ? 'doar pe baterie' : (d.balI > 0 ? '+' : '') + amp(d.balI)],
+                    ['Corecție zero ESP (învățată)', d.offI === undefined ? '--' : (d.offI > 0 ? '−' : '+') + Math.abs(d.offI).toFixed(2) + ' A'],
                     ['Tensiune bus', n1(d.bus) + ' V'], ['WiFi placă invertor', n1(d.rssi) + ' dBm']]);
   ip.sets.textContent = '';
   if (!s) { el('div', 'note', ip.sets).textContent = 'Setările încă n-au fost citite de placa invertorului.'; return; }
@@ -1837,7 +1853,7 @@ const tvHome = (function () {
   el('div', '', g).textContent = 'Televizor';
   const sub = el('div', 'h-sub', g);
   el('span', 'h-chev', head).textContent = '›';
-  const btn = el('button', 'tvart', c);
+  const btn = el('button', 'tvart', el('div', 'tvwrap', c));   // butonul e doar desenul televizorului
   btn.innerHTML = TV_ART;
   btn.setAttribute('aria-label', 'Pornește / oprește televizorul');
   btn.addEventListener('click', () => {
@@ -1986,6 +2002,11 @@ function renderRoomTiles() {
       on = a.pornit === 1;
       st = on ? 'Aer pornit · ' + (a.termo.on ? a.termo.tinta.toFixed(1) : a.temp) + '°' : 'Aer oprit';
     } else if (a) st = 'Aer: nu răspunde';
+    else if (i === (r && r.senzor) && lastData && lastData.priza && lastData.priza.legat) {   // camera aerotermei
+      const h = heatState(lastData.priza);
+      on = h.heating;
+      st = 'Aerotermă ' + h.short;
+    }
     else if (i === iracRoom() && iracLast()) {
       on = iracLast() !== IRAC_OFF;
       st = 'AC: ' + iracLast().slice(IRAC.length + 1);
@@ -1994,7 +2015,6 @@ function renderRoomTiles() {
       on = fanOn() || (heater && r.pornit);
       st = 'Ventilator ' + (fanOn() ? 'pornit' : 'oprit') + (heater && r.pornit ? ' · aerotermă' : '');
     }
-    else if (heater) { on = r.pornit; st = 'Aerotermă ' + (r.pornit ? 'pornită' : 'în repaus'); }
     else st = s.varsta >= 0 ? ago(s.varsta) : 'aștept senzorul';
     t.s.textContent = st;
     t.ic.classList.toggle('on', on);
@@ -2462,25 +2482,48 @@ function renderIrac() {
 // aeroterma: doar in camera senzorului ei
 setIcon($('aIcon'), 'heater');
 $('aArt').innerHTML = ART.heater;
-// priza Xiaomi a aerotermei: starea reala si consumul (citite de placa la 5 s), comutator
+// Aeroterma are si termostatul ei: cu priza pornita poate sa nu incalzeasca. Se vede din consumul prizei:
+// sub HEAT_MIN_W cu priza pornita = a oprit-o termostatul ei (sau e scoasa din priza / oprita din buton).
+const HEAT_MIN_W = 30;
+function heatState(p) {
+  const live = p && p.legat && p.varsta >= 0 && p.varsta < 30;
+  if (!live) return { live: false, heating: false, short: 'nu răspunde', long: 'Priza aerotermei nu răspunde' };
+  if (p.pornita !== 1) return { live, heating: false, short: 'oprită', long: 'Oprită (priza e oprită)' };
+  if (p.w >= HEAT_MIN_W) return { live, heating: true, short: 'încălzește', long: 'Încălzește · ' + p.w + ' W' };
+  return { live, heating: false, short: 'fără consum', idle: true,
+           long: 'Priza e pornită, dar aeroterma nu consumă: a oprit-o termostatul ei sau e deconectată' };
+}
+// 1) priza Xiaomi: pornire / oprire manuala, cu starea reala si consumul (citite de placa la 5 s)
 const plug = (function () {
   const row = $('aPlug');
   setIcon(el('span', 'pi', row), 'power');
   const t = el('div', 'pt', row);
-  el('b', '', t).textContent = 'Priză aerotermă';
+  el('b', '', t).textContent = 'Priză · manual';
   const st = el('span', '', t);
   const w = el('div', 'pw', row);
   const sw = makeSwitch(row, on => post('/api/priza', { v: on ? 1 : 0 }));
   return { row, st, w, sw };
 })();
+// 2) automatizarea: placa porneste / opreste priza dupa termometrul camerei
+const auto = (function () {
+  const row = $('aAuto');
+  setIcon(el('span', 'pi', row), 'auto');
+  const t = el('div', 'pt', row);
+  el('b', '', t).textContent = 'Automat · după termometru';
+  const st = el('span', '', t);
+  const sw = makeSwitch(row, on => rule({ on: on ? 1 : 0 }));
+  return { row, st, sw };
+})();
 function renderPlug(p) {
   if (!p) return;
-  const live = p.legat && p.varsta >= 0 && p.varsta < 30;
-  plug.row.classList.toggle('on', live && p.pornita === 1);
-  plug.st.textContent = !p.legat ? 'caut priza…' : !live ? 'nu răspunde' : p.pornita === 1 ? 'pornită' : 'oprită';
-  plug.w.textContent = live && p.w >= 0 ? p.w + ' W' : '';
+  const h = heatState(p);
+  plug.row.classList.toggle('on', h.live && p.pornita === 1);
+  plug.st.textContent = !p.legat ? 'caut priza…' : !h.live ? 'nu răspunde' : p.pornita === 1 ? 'pornită' : 'oprită';
+  plug.w.textContent = h.live && p.w >= 0 ? p.w + ' W' : '';
   if (document.activeElement !== plug.sw) plug.sw.checked = p.pornita === 1;
-  plug.sw.disabled = !live;
+  plug.sw.disabled = !h.live;
+  $('aMsg').textContent = h.long;
+  $('aMsg').className = 'heat-msg' + (h.heating ? ' hot' : h.idle || !h.live ? ' warn' : '');
 }
 
 // pragul de pornire: - / + din 0,5 in 0,5 grade (5..30)
@@ -2489,7 +2532,6 @@ const aVal = makeStepper($('aChips'), 'near', d => {
   const r = lastData && lastData.automat;
   if (r) rule({ sub: Math.min(30, Math.max(5, r.sub + d * 0.5)) });
 });
-$('aOn').addEventListener('change', () => rule({ on: $('aOn').checked ? 1 : 0 }));
 function arcPt(f) {                                   // punct pe arcul de 180 grade (stanga = 10, dreapta = 30)
   const a = Math.PI * (1 - Math.max(0, Math.min(1, f)));
   return [110 + 90 * Math.cos(a), 110 - 90 * Math.sin(a)];
@@ -2498,8 +2540,11 @@ function renderHeat(r) {
   $('dHeat').style.display = r && r.senzor === selRoom ? '' : 'none';
   if (!r || r.senzor !== selRoom) return;
   const s = sensorsData[r.senzor];
-  $('aOn').checked = r.on;
-  $('aSub').textContent = !r.on ? 'automatizare oprită' : (r.pornit ? 'merge' : 'în repaus');
+  if (document.activeElement !== auto.sw) auto.sw.checked = r.on;
+  auto.row.classList.toggle('on', r.on);
+  auto.st.textContent = r.on ? 'pornește sub ' + r.sub.toFixed(1) + '°, oprește la ' + (r.sub + 1).toFixed(1) + '°'
+                             : 'oprit: priza se comandă doar manual';
+  $('aSub').textContent = r.on ? 'automat' : 'manual';
   deg(aVal, r.sub, 1);
   const t = s && s.temp !== null ? s.temp : null;
   $('aNow').textContent = '';
@@ -2713,7 +2758,7 @@ if (REMOTE) {
   const sec = $('pg-sys').querySelector('section');
   const c = el('div', 'card mqform');
   sec.insertBefore(c, sec.firstChild);             // primul card pe Sistem
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v23';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v24';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
