@@ -1602,7 +1602,7 @@ function renderInvPage(iv) {
   T.pv.b.textContent = live ? fmtW(d.pvW) : '--';
   kvRows(T.pv.list, [['Tensiune', n1(d.pvV, 1) + ' V'], ['Curent', n1(d.pvI, 1) + ' A'],
                      ['Tensiune de gol (învățată)', d.voc > 0 ? n1(d.voc) + ' V' : 'încă nu'],
-                     ['Regulator', d.pvThr === 1 ? 'reduce producția (bateria plină)' : 'putere maximă']]);
+                     ]);
   T.bat.b.textContent = live ? Math.round(d.soc) + '%' : '--';
   // curentii: masurati de ESP-ul propriu (direct din Blynk, prin placa casei) si cei raportati de invertor
   const m = (lastData && lastData.masurat) || {}, mi = m.ok ? m.i : null;
@@ -1613,7 +1613,7 @@ function renderInvPage(iv) {
                       ['Descărcare · ESP', amp(mi === null ? null : Math.max(0, -mi))],
                       ['Încărcare · invertor', amp(d.chgInv)],
                       ['Descărcare · invertor', amp(d.disInv)],
-                      ['Bilanț (panouri − casă)', d.balI === undefined ? '--' : (d.balI > 0 ? '+' : '') + amp(d.balI)],
+                      ['Bilanț (panouri − casă)', d.balI === undefined ? 'doar pe baterie' : (d.balI > 0 ? '+' : '') + amp(d.balI)],
                       ['Corecție zero ESP (învățată)', d.offI === undefined ? '--' : (d.offI > 0 ? '−' : '+') + Math.abs(d.offI).toFixed(2) + ' A']]);
   T.load.b.textContent = live ? fmtW(d.outW) : '--';
   kvRows(T.load.list, [['Sarcină', n1(d.load) + '% · ' + n1(d.outVA) + ' VA'], ['Ieșire', n1(d.outV, 1) + ' V · ' + n1(d.outHz, 1) + ' Hz']]);
@@ -2713,7 +2713,7 @@ if (REMOTE) {
   const sec = $('pg-sys').querySelector('section');
   const c = el('div', 'card mqform');
   sec.insertBefore(c, sec.firstChild);             // primul card pe Sistem
-  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v22';
+  el('div', 'cname', c).textContent = 'Server MQTT (aplicația de telefon) · v23';
   el('div', 'note', c).textContent = 'Datele rămân doar pe acest telefon. Recomandat: un utilizator EMQX separat pentru telefoane.';
   const f = {};
   [['host', 'Server', 'ex. xxxx.ala.eu-central-1.emqxsl.com'], ['port', 'Port WebSocket securizat', '8084'],
